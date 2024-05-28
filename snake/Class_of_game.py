@@ -44,7 +44,7 @@ class Tank(pygame.sprite.Sprite):
         # self.rect.topleft = (40, 40) 
         
         
-        
+        self.key=True
         self.tank_image=tank_image
         self.image = self.tank_image
         self.rect = self.image.get_rect(center = (37,37))
@@ -53,7 +53,7 @@ class Tank(pygame.sprite.Sprite):
         self.type_=""
         
         
-        self.tank_speed =1
+        self.tank_speed = 1
         
     def input(self):
         
@@ -118,6 +118,13 @@ class Tank(pygame.sprite.Sprite):
                     self.rect.y = width-110
             else:
                 self.activ=False
+                
+            if  self.rect.x>length-75:
+                self.rect.x-=1 
+            if  self.rect.x<50:
+                self.rect.x+=1 
+            
+                
                 
     
     def reset_game(self):
@@ -538,21 +545,44 @@ class Enemy_tank(pygame.sprite.Sprite):
         self.random_movw()
         self.dostroy()
         
-class Flag(pygame.sprite.Sprite):
-    def __init__(self):
+class Door(pygame.sprite.Sprite):
+    def __init__(self,x,y):
         super().__init__()
-        self.flag=pygame.image.load('graphics/doors/door_silver.png').convert_alpha()
-        self.rect= self.flag.get_rect(center = (75,175))
-        self.image=self.flag
+        self.door=pygame.image.load('graphics/doors/door.jpg').convert_alpha()
+        
+        self.image =self.door
+        self.rect = self.image.get_rect(center = (x,y))
+        self.rect.x=x
+        self.rect.y=y
+        self.type_of_dor=True
         
     def dstroy(self):
         NULL
         # if flag_hit_from_ball():
         #     self.kill()
-    
-            
+   
     def update(self):
         camera(self,"")      
+  
+class Key(pygame.sprite.Sprite):
+    def __init__(self,x,y,key_is_real):
+        super().__init__()
+        self.key = pygame.image.load('graphics/doors/key.png').convert_alpha()
+        self.image=self.key
+        self.rect= self.image.get_rect(center =(x,y))
+        self.rect.x=x
+        self.rect.y=y
+        self.key_is_real=key_is_real
+    def key_is_geting(self):
+        if pygame.sprite.spritecollide(self,tank,False):
+            tank.sprite.key=False
+            key.add(Key(length-300,width-60,False))
+            self.kill()
+            
+    def update(self):
+        self.key_is_geting()
+        if self.key_is_real:
+            camera(self,"")
 
 class Star(pygame.sprite.Sprite):
     def __init__(self,pos):
@@ -637,25 +667,22 @@ def camera(group,type_):
     if tank.sprite.activ:
             
         if tank.sprite.direction=="right":
-            #group.rect.x-=1
             
 
             if group.rect.x>min_x:
                 group.rect.x-=1
-                
- 
             else:
                 tank.sprite.activ=False
-                #group.rect.x+=1
+                
             
         if tank.sprite.direction=="left" :
-            #group.rect.x+=1 
+             
             
-            if group.rect.x<max_x:
+            if group.rect.x<max_x+50:
                 group.rect.x+=1        
             else:
                 tank.sprite.activ=False
-                #group.rect.x-=1
+                
     if tank.sprite.type_=="b":
         if tank.sprite.direction=="left":
             group.rect.x-=1
@@ -664,6 +691,9 @@ def camera(group,type_):
             group.rect.x+=1
 
 def stone_block():
+    if tank.sprite.key:
+        if pygame.sprite.spritecollide(tank.sprite,door,False) and tank.sprite.key:
+            return True
     
     if pygame.sprite.spritecollide(tank.sprite,ice_wall,False):
         if pygame.sprite.spritecollide(tank.sprite,ice_wall,False,pygame.sprite.collide_mask):
@@ -675,6 +705,7 @@ def stone_block():
     if pygame.sprite.spritecollide(tank.sprite,stone_wall,False):
         return True
     
+
     if pygame.sprite.spritecollide(tank.sprite,wood_wall,False):
         return True
     
@@ -742,7 +773,8 @@ def enmey_stonr_block(enemy_self):
     
         
     oter_enemy.remove(enemy_self)
-        
+    if pygame.sprite.spritecollide(enemy_self,door,False):
+        return True  
     if pygame.sprite.spritecollide(enemy_self,wood_wall,False):
         return True
     if pygame.sprite.spritecollide(enemy_self,stone_wall,False):
@@ -779,7 +811,8 @@ def bollet_hit_enemy_tank():
     return False       
 
 def stone_wall_block_ball(self_ball):
-    
+    if pygame.sprite.spritecollide(self_ball,door,False):
+        return True
     if pygame.sprite.spritecollide(self_ball,tnt,False):
         return True
     if pygame.sprite.spritecollide(self_ball,stone_wall,False):
@@ -877,10 +910,13 @@ def imags():
     # global tank_image_
     # tank_image_ = pygame.image.load('graphics/tank/tank.png').convert_alpha()
     
-def setAutoUpdate(val):
-    global screenRefresh
-    screenRefresh = val
-    
+def door_is_open():
+    if tank.sprite.key==False:
+        if pygame.sprite.spritecollide(tank.sprite,door,False):
+            return False
+        return True
+    else:
+        return True
 #groups
 background = pygame.sprite.Group()
 
@@ -907,7 +943,8 @@ ball_animation= pygame.sprite.Group()
 
 enemy_tank = pygame.sprite.Group()
 
-my_flag= pygame.sprite.Group()
+door= pygame.sprite.Group()
+key= pygame.sprite.Group()
 
 
 

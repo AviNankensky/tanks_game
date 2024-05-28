@@ -53,7 +53,7 @@ def ice_wall_bomber():
     
 def flag_hit_from_ball(): 
     for ball in balls:
-        if pygame.sprite.spritecollide(ball,my_flag,False):
+        if pygame.sprite.spritecollide(ball,door,False):
             
             return False
     else:
@@ -62,7 +62,7 @@ def flag_hit_from_ball():
 def reset_game(): 
     
 
-    
+    tank.sprite.key=True
     tank.sprite.rect.x=50
     tank.sprite.rect.y=50
     ice_wall.empty()
@@ -76,7 +76,8 @@ def reset_game():
     
     
     pixels()
-    my_flag.add(Flag())
+    door.add(Door(0,150))
+    key.add(Key(150,150,True))
 
     #background
     background.add(Background((0,0)))
@@ -105,7 +106,7 @@ def pixels():
         for c in range(0,width-50,50):   #400
             type_pixel =choice(['stone','wood',"empty",'trees','wood','wood',"empty","","",""])
             
-            if c==0 or c>width-125 or r==0 or r >length*3-50:
+            if c==0  or c>width-125 or r==0 and c!=150 or r >length*3-50:
                 stone_wall.add(Stone_wall(r,c)) 
             elif r<=150 and c<=300 or r==750 and c==0 or c==150 or(r==0 and (c== 150 or c==200 or c==100) or r==50 and (c==100 or c==150 or c==200 ) )  :
                 NULL
@@ -377,8 +378,9 @@ while True:
 
         shield_ston.draw(screen)
         shield_ston.update()
-        my_flag.draw(screen)
-        my_flag.update()
+        door.draw(screen)
+        door.update()
+        
         
         ice_wall.draw(screen)
         ice_wall.update()
@@ -389,10 +391,11 @@ while True:
         tnt_explosion.draw(screen)
         tnt_explosion.update()
         
-        game_active=flag_hit_from_ball()
+        game_active=door_is_open() #flag_hit_from_ball()
         
         screen.blit(background_line,(0,width-70))
-        
+        key.draw(screen)
+        key.update()
         screen.blit(ball_image,ball_rect)
         screen.blit(tnt_image,tnt_rect)
         screen.blit(ice_image,ice_rect)
@@ -411,7 +414,8 @@ while True:
     
     else:
         background.empty()
-        my_flag.empty()
+        door.empty()
+        key.empty()
         
         if score == 0 or screen_2 :
             screen.blit(Background_start,(0,0))
