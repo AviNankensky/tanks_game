@@ -1,10 +1,13 @@
 from asyncio.windows_events import NULL
 
+from turtle import update
+
 import pygame 
 from sys import exit
-from random import choice ,randint
+from random import choice ,randint 
 from tkinter import *
 from Class_of_game import *
+
 
 
 win= Tk()
@@ -20,6 +23,7 @@ weapon_list=["ball","ice","tnt"]
 weapon_index=0
 num_enemy_tank=5
 screen_2=False
+
 
 
 def star_block():
@@ -57,8 +61,10 @@ def flag_hit_from_ball():
                
 def reset_game(): 
     
-    tank.sprite.rect.x=37
-    tank.sprite.rect.y=37
+
+    
+    tank.sprite.rect.x=50
+    tank.sprite.rect.y=50
     ice_wall.empty()
     trees_wall.empty()
     wood_wall.empty()
@@ -70,12 +76,14 @@ def reset_game():
     
     
     pixels()
-    
+    my_flag.add(Flag())
 
     #background
     background.add(Background((0,0)))
-    background.add(Background((length,0)))
-    background.add(Background((length*2,0)))
+    background.add(Background((length+1,0)))
+    background.add(Background((length*2+1,0)))
+
+    
     
     #heart
     num_of_heart=3
@@ -85,15 +93,23 @@ def reset_game():
         num_of_heart-=1 
 
 def pixels(): 
-    pos_ston = [(0,100),(0,200),(50,100),(50,150),(50,200)]
+    
+
+    
+
+    pos_ston = [(50,100),(50,200),(100,100),(100,150),(100,200)]
     for i in range(len(pos_ston)):
         shield_ston.add(Shield_stone_wall(pos_ston[i]))
         
-    for r in range(0,length*2,50):   # 800
+    for r in range(0,length*3,50):   # 800
         for c in range(0,width-50,50):   #400
             type_pixel =choice(['stone','wood',"empty",'trees','wood','wood',"empty","","",""])
-            if r<=50 and c<=50 or r==750 and c==0 or c==150 or(r==0 and (c== 150 or c==200 or c==100) or r==50 and (c==100 or c==150 or c==200 ) )  :
+            
+            if c==0 or c>width-125 or r==0 or r >length*3-50:
+                stone_wall.add(Stone_wall(r,c)) 
+            elif r<=150 and c<=300 or r==750 and c==0 or c==150 or(r==0 and (c== 150 or c==200 or c==100) or r==50 and (c==100 or c==150 or c==200 ) )  :
                 NULL
+            
             else:
                 if  type_pixel=="bounses":
                     bounses.add(Bounse("heart",r,c))
@@ -125,12 +141,14 @@ def display_score():
 
 
 pygame.init()
-screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) 
+screen = pygame.display.set_mode((0,0)) #, pygame.FULLSCREEN
+
 clock = pygame.time.Clock()
 pygame.display.set_caption('Tanks')
 test_font = pygame.font.Font('font/OpenSans-Regular-webfont.woff', 50)
 star_x=775
 
+imags()
 
 Background_start = pygame.transform.scale(pygame.image.load('graphics/Background of the beginning.jpg'),(length,width)).convert_alpha()  
 
@@ -184,10 +202,12 @@ exit_rect = exit_image.get_rect(center = (length/2,width/2-50))
 enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(enemy_timer,3000)
 
+#background
 
 
 
 while True:
+    
     #print(tank.sprite.activ)
     #ice_wall_bomber()
     oter_enemy_bomber() 
@@ -231,9 +251,9 @@ while True:
 
                 if event.key == pygame.K_SPACE  :
                     
-                    if weapon_type == "ball":
-                        balls.add(Ball(tank.sprite.rect.center,tank.sprite.direction,"player_ball"))
-               
+                    if weapon_type == "ball" :
+                            balls.add(Ball(tank.sprite.rect.center,tank.sprite.direction,"player_ball"))
+                    
                     if weapon_type=='ice'  :
                         
                         if tank.sprite.direction =="right":
@@ -266,7 +286,7 @@ while True:
             if event.type == enemy_timer :
                 if len(enemy_tank)< 5:
                 
-                    star.add(Star((star_x,20)))
+                    star.add(Star((star_x,175)))
                 for enemy in enemy_tank:
                     enemy.direction=choice(["smart_move","smart_move","smart_move"])#"up","right","left",
                 #if num_enemy_tank>0 :  #and star_block()
@@ -323,34 +343,7 @@ while True:
             
     if game_active:
          
-        # if background_x>0:
-        # #     print("limat_tesy")
-        #     tank.sprite.activ=False
-        # if tank.sprite.activ:
-            
-                
-        #     if tank.sprite.direction=="right":
-        #         background_x-=1
-        #         #star_x-=1
-        #         background2_x-=1
-        #         background3_x-=1
-            
-        #     if tank.sprite.direction=="left":
-        #         background_x+=1
-        #         #star_x+=1
-        #         background2_x+=1
-        #         background3_x+=1
-            # if background_x <= -length:
-            #     print("scren_test")
-            #     background_x+= length*2
-                   
-            
-                
-        # screen.blit(background,(background_x,0))
-        # screen.blit(background2,(background2_x,0))
-        # screen.blit(background3,(background3_x,0))
-        
-        
+       
         
         bounses.draw(screen)
 
@@ -378,9 +371,10 @@ while True:
         stone_wall.draw(screen)
         stone_wall.update()
     
-    
         wood_wall.draw(screen)
         wood_wall.update()
+        
+
         shield_ston.draw(screen)
         shield_ston.update()
         my_flag.draw(screen)
@@ -416,6 +410,8 @@ while True:
         
     
     else:
+        background.empty()
+        my_flag.empty()
         
         if score == 0 or screen_2 :
             screen.blit(Background_start,(0,0))
