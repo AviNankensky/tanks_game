@@ -1,10 +1,8 @@
 from asyncio.windows_events import NULL
 
-from turtle import update
-
 import pygame 
 from sys import exit
-from random import choice ,randint 
+from random import choice ,randint
 from tkinter import *
 from Class_of_game import *
 
@@ -33,15 +31,9 @@ def star_block():
             return False
     else:
         return True   
-            
-def oter_enemy_bomber(): 
+
     
-    for enemy in enemy_tank:
-        if  pygame.sprite.spritecollide(enemy,star,False):
-            
-            return True
-    else:
-        return False      
+    
             
 def ice_wall_bomber(): 
     for enemy in enemy_tank:
@@ -73,16 +65,16 @@ def reset_game():
     enemy_tank.empty()
     balls.empty()
     heart.empty()
-    
-    
+    fire.empty()
+    star.empty()
     pixels()
     door.add(Door(0,150))
-    key.add(Key(150,150,True))
+    
 
     #background
     background.add(Background((0,0)))
     background.add(Background((length+1,0)))
-    background.add(Background((length*2+1,0)))
+    #background.add(Background((length*2+1,0)))
 
     
     
@@ -94,20 +86,14 @@ def reset_game():
         num_of_heart-=1 
 
 def pixels(): 
-    
-
-    
-
-    pos_ston = [(50,100),(50,200),(100,100),(100,150),(100,200)]
-    for i in range(len(pos_ston)):
-        shield_ston.add(Shield_stone_wall(pos_ston[i]))
-        
-    for r in range(0,length*3,50):   # 800
+    for r in range(0,length*2,50):   # 800
         for c in range(0,width-50,50):   #400
-            type_pixel =choice(['stone','wood',"empty",'trees','wood','wood',"empty","","",""])
+            type_pixel =choice(['stone','shield_stone','wood',"empty",'trees','wood','wood',"empty","","",""])
             
-            if c==0  or c>width-125 or r==0 and c!=150 or r >length*3-50:
+            if c==0  or c>width-125 or r==0 and c!=150 or r >length*2-50:
                 stone_wall.add(Stone_wall(r,c)) 
+            elif c==150 and( r == 150  or r==1000 or r==1500):
+                star.add(Star((r,c)))
             elif r<=150 and c<=300 or r==750 and c==0 or c==150 or(r==0 and (c== 150 or c==200 or c==100) or r==50 and (c==100 or c==150 or c==200 ) )  :
                 NULL
             
@@ -127,22 +113,30 @@ def pixels():
             
                 if  type_pixel =='wood':
                     wood_wall.add(Wood_wall(r,c)) 
+                if type_pixel=='shield_stone':
+                    shield_ston.add(Shield_stone_wall((r,c)))
   
+
+
 def display_score():
     
     current_time = int(pygame.time.get_ticks() / 1000) -start_time
     score_surf = test_font.render(f'Score: {current_time}',False,( 0, 0, 0))
     score_rect = score_surf.get_rect(center = (length-150,width-40))
     screen.blit(score_surf,score_rect)
+    
+    if current_time%20==0 and current_time!=0 and len(enemy_boss1)==0:
+        enemy_boss1.add(Boss1((randint(100,length-100),randint(100,width-100))))
+        
+  
     return current_time
 
 
     
-    
 
 
 pygame.init()
-screen = pygame.display.set_mode((0,0)) #, pygame.FULLSCREEN
+screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) 
 
 clock = pygame.time.Clock()
 pygame.display.set_caption('Tanks')
@@ -156,15 +150,7 @@ Background_start = pygame.transform.scale(pygame.image.load('graphics/Background
 
 Background_end = pygame.transform.scale(pygame.image.load('graphics/background_end.png'),(length,width)).convert_alpha()  
 
-# background = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()  
-# background2 = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()  
-# background3 = background2
-# background3_x = length*3
-# background_x=0
-# background2_x=length
-    
-
-
+ 
 background_line = pygame.transform.scale(pygame.image.load('graphics/background_line.jpg'),(length,70)).convert_alpha()  
 
 
@@ -208,12 +194,6 @@ pygame.time.set_timer(enemy_timer,3000)
 
 
 while True:
-    
-    #print(tank.sprite.activ)
-    #ice_wall_bomber()
-    oter_enemy_bomber() 
-    
-   
     if bollet_hit_enemy_tank():
         outcome_of_enemy_tanks+=1
        
@@ -285,17 +265,15 @@ while True:
 
            
             if event.type == enemy_timer :
-                if len(enemy_tank)< 5:
                 
-                    star.add(Star((star_x,175)))
+                if len(enemy_tank)< 5:
+                    
+                    for f in star:
+                        f.tank_out()
+                           
                 for enemy in enemy_tank:
                     enemy.direction=choice(["smart_move","smart_move","smart_move"])#"up","right","left",
-                #if num_enemy_tank>0 :  #and star_block()
-                
-                
-                    #num_enemy_tank-=1      
-                
-            
+        
             
         else:
             if button_type=="screen 2":
@@ -351,8 +329,7 @@ while True:
         background.draw(screen)
         background.update()
 
-        tank.draw(screen)
-        tank.update()
+        
     
    
         star.draw(screen)
@@ -360,14 +337,21 @@ while True:
     
         enemy_tank.draw(screen)
         enemy_tank.update()
+        
+        enemy_boss1.draw(screen)
+        enemy_boss1.update()
+        
         trees_wall.draw(screen)
         trees_wall.update()
 
         balls.draw(screen)
         balls.update()
+        
         ball_animation.draw(screen)
         ball_animation.update()
 
+        fire.draw(screen)
+        fire.update()
 
         stone_wall.draw(screen)
         stone_wall.update()
@@ -380,7 +364,8 @@ while True:
         shield_ston.update()
         door.draw(screen)
         door.update()
-        
+        tank.draw(screen)
+        tank.update()
         
         ice_wall.draw(screen)
         ice_wall.update()
@@ -390,7 +375,15 @@ while True:
         
         tnt_explosion.draw(screen)
         tnt_explosion.update()
-        
+        x=tank.sprite.rect.x
+        # if door_is_open()==False:
+        #     tank.sprite.activ = False
+        #     while(tank.sprite.rect.x>x-50):
+                
+        #         tank.sprite.rect.x-=0.5
+        #     game_active=door_is_open()
+        # else:
+        #     tank.sprite.activ = True
         game_active=door_is_open() #flag_hit_from_ball()
         
         screen.blit(background_line,(0,width-70))
@@ -416,7 +409,7 @@ while True:
         background.empty()
         door.empty()
         key.empty()
-        
+        enemy_boss1.empty()
         if score == 0 or screen_2 :
             screen.blit(Background_start,(0,0))
 
