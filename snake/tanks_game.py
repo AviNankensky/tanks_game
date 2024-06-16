@@ -38,7 +38,7 @@ def oter_enemy_bomber():
     
     for enemy in enemy_tank:
         if  pygame.sprite.spritecollide(enemy,star,False):
-            star.empty()
+            
             return True
     else:
         return False      
