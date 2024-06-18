@@ -8,6 +8,7 @@ from Class_of_game import *
 
 
 
+
 win= Tk()
 win.geometry("650x250")
 width =  win.winfo_screenheight()
@@ -19,7 +20,7 @@ score=0
 weapon_type = 'ball'
 weapon_list=["ball","ice","tnt"]
 weapon_index=0
-num_enemy_tank=5
+
 screen_2=False
 
 
@@ -51,12 +52,13 @@ def flag_hit_from_ball():
     else:
         return True
                
-def reset_game(): 
+def reset_game(level_of_game): 
     
 
+    tank.add(Tank())
+    
+    background.empty()
     tank.sprite.key=True
-    tank.sprite.rect.x=50
-    tank.sprite.rect.y=50
     ice_wall.empty()
     trees_wall.empty()
     wood_wall.empty()
@@ -64,26 +66,54 @@ def reset_game():
     shield_ston.empty()
     enemy_tank.empty()
     balls.empty()
-    heart.empty()
     fire.empty()
     star.empty()
+    enemy_boss1.empty()
+    key.empty()
+    door.empty()
+    
+
+    # hart
+    
+    if level_of_game==1:
+        num_of_heart=3
+        pos_of_heart=[(50,width-40),(100,width-40),(150,width-40)]
+        while num_of_heart>0:
+            heart.add(Heart(pos_of_heart[num_of_heart-1]))
+            num_of_heart-=1 
+  
+    #add....
     pixels()
     door.add(Door(0,150))
     
-
-    #background
-    background.add(Background((0,0)))
-    background.add(Background((length+1,0)))
-    #background.add(Background((length*2+1,0)))
-
+    #enemy in...
     
+    
+    if level_of_game == 1:
+        background__ = pygame.transform.scale(pygame.image.load('graphics/background/background_level_1.jpg'),(length,width)).convert_alpha()  
+        
+    if level_of_game == 2:   
+        background__ = pygame.transform.scale(pygame.image.load('graphics/background/background_level_2.webp'),(length,width)).convert_alpha()  
+
+
+    if level_of_game == 3:   
+        background__ = pygame.transform.scale(pygame.image.load('graphics/background/background_level_3.webp'),(length,width)).convert_alpha()  
+
+        
+    #background
+    background.add(Background((0,0),background__))
+    background.add(Background((length,0),background__))
+       
     
     #heart
-    num_of_heart=3
-    pos_of_heart=[(50,width-40),(100,width-40),(150,width-40)] 
-    while num_of_heart>0:
-        heart.add(Heart(pos_of_heart[num_of_heart-1]))
-        num_of_heart-=1 
+    
+
+    
+    
+        
+    
+    
+    
 
 def pixels(): 
     for r in range(0,length*2,50):   # 800
@@ -116,23 +146,35 @@ def pixels():
                 if type_pixel=='shield_stone':
                     shield_ston.add(Shield_stone_wall((r,c)))
   
-
-
 def display_score():
     
     current_time = int(pygame.time.get_ticks() / 1000) -start_time
     score_surf = test_font.render(f'Score: {current_time}',False,( 0, 0, 0))
     score_rect = score_surf.get_rect(center = (length-150,width-40))
     screen.blit(score_surf,score_rect)
-    
-    if current_time%20==0 and current_time!=0 and len(enemy_boss1)==0:
-        enemy_boss1.add(Boss1((randint(100,length-100),randint(100,width-100))))
-        
   
     return current_time
 
 
-    
+def whell_of_elemnt_in_teh_game(level):
+    current_time=display_score()
+    if current_time%5==0:
+        if len(enemy_tank)< 3*level:
+                    
+            for f in star:
+                f.tank_out()
+                
+                
+                           
+    if level==1:
+        
+        if current_time%20==0 and current_time!=0 and len(enemy_boss1)==0:
+            enemy_boss1.add(Boss1((randint(150,length-150),randint(150,width-150))))
+
+    if level == 2:   
+
+        if current_time%10==0 and current_time!=0 and len(enemy_boss1)==0:
+            enemy_boss1.add(Boss1((randint(150,length-150),randint(150,width-150))))
 
 
 pygame.init()
@@ -191,9 +233,12 @@ pygame.time.set_timer(enemy_timer,3000)
 
 #background
 
-
+level=1
+sutfes_level= pygame.Surface((width,length),pygame.SRCALPHA)
+pygame.draw.rect(sutfes_level,(128,128,128,180),(100,100,300,300))
 
 while True:
+    whell_of_elemnt_in_teh_game(level)
     if bollet_hit_enemy_tank():
         outcome_of_enemy_tanks+=1
        
@@ -217,6 +262,9 @@ while True:
                 if event.key == pygame.K_2:
                     weapon_type=weapon_list[1]
                     weapon_index=-1
+                    
+                    
+                
                     
                 if event.key == pygame.K_3:
                     weapon_type=weapon_list[2]
@@ -263,16 +311,8 @@ while True:
                             tnt.add(Tnt(tank.sprite.rect.x,tank.sprite.rect.y-50))
 
 
-           
-            if event.type == enemy_timer :
-                
-                if len(enemy_tank)< 5:
-                    
-                    for f in star:
-                        f.tank_out()
-                           
-                for enemy in enemy_tank:
-                    enemy.direction=choice(["smart_move","smart_move","smart_move"])#"up","right","left",
+
+               
         
             
         else:
@@ -308,8 +348,9 @@ while True:
                         game_active=True
                         
                         outcome_of_enemy_tanks=0
-                        num_enemy_tank=5
-                        reset_game()
+                        #num_enemy_tank=5
+                        reset_game(1)
+                        
                         
                     if button_type=="exit":  
                         pygame.quit()
@@ -322,7 +363,14 @@ while True:
             
     if game_active:
          
-       
+        if not door_is_open():
+            #outcome_of_enemy_tanks=0
+            #num_enemy_tank=5
+            level+=1
+            reset_game(level)
+            # screen.blit(sutfes_level,(0,0))
+            # pygame.display.update()
+            # sleep(2)
         
         bounses.draw(screen)
 
@@ -384,7 +432,7 @@ while True:
         #     game_active=door_is_open()
         # else:
         #     tank.sprite.activ = True
-        game_active=door_is_open() #flag_hit_from_ball()
+        # game_active=door_is_open() #flag_hit_from_ball()
         
         screen.blit(background_line,(0,width-70))
         key.draw(screen)
@@ -401,15 +449,26 @@ while True:
         if weapon_type=='tnt'  :
             pygame.draw.rect(screen,(0,0,0),tnt_rect,4)
         #screen.blit(Rect)
+        
         if not heart:
             game_active=False
+      
+        #screen.blit(sutfes_level,(0,0))
+        #game_active=door_is_open()
+
+            
+           
+            
+            
+
+        
         
     
     else:
-        background.empty()
-        door.empty()
-        key.empty()
-        enemy_boss1.empty()
+        # background.empty()
+        # door.empty()
+        # key.empty()
+        # enemy_boss1.empty()
         if score == 0 or screen_2 :
             screen.blit(Background_start,(0,0))
 

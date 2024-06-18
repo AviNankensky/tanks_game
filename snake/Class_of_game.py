@@ -18,9 +18,10 @@ length = win.winfo_screenwidth()
          
 
 class Background(pygame.sprite.Sprite):
-    def __init__(self,pos):
+    def __init__(self,pos,img):
         super().__init__()
-        self.background = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()  
+        #self.background = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()  
+        self.background = img
         self.pos=pos
         self.end=""
         
@@ -42,7 +43,7 @@ class Tank(pygame.sprite.Sprite):
         self.key=True
         self.tank_image=tank_image
         self.image = self.tank_image
-        self.rect = self.image.get_rect(center = (150,150))
+        self.rect = self.image.get_rect(center = (75,75))
         self.direction="up"
         self.activ=False
         self.type_=""
@@ -75,6 +76,7 @@ class Tank(pygame.sprite.Sprite):
                 
         else:  
             self.type_=" "
+            
             if  self.keys[pygame.K_LEFT]:
                 self.direction="left"
                 self.activ=True
@@ -117,19 +119,19 @@ class Tank(pygame.sprite.Sprite):
             else:
                 self.activ=False
                 
-            if  self.rect.x>length-45:
+            if  self.rect.x>length-80:
                 self.rect.x-=1 
             if  self.rect.x<50:
                 self.rect.x+=1 
             
                 
-                
+              
     
     def reset_game(self):
         if bollet_hit_player():
             self.rest_pos=True
-            self.rect.x=150
-            self.rect.y=150
+            self.rect.x=50
+            self.rect.y=50
             
         else:
             self.rest_pos=False
@@ -427,7 +429,8 @@ class Boss1(pygame.sprite.Sprite):
         collided_balls = pygame.sprite.spritecollide(self, balls, False)
         for ball in collided_balls:
             if ball.type == "player_ball":
-                key.add(Key((self.rect.x, self.rect.y), True))
+                if len(key)==0:
+                    key.add(Key((self.rect.x, self.rect.y), True))
                 self.kill()
                 break
     
@@ -587,25 +590,6 @@ class Enemy_tank(pygame.sprite.Sprite):
         if self.move_time<0:
             self.direction=choice(["up","right","down","left","smart_move","smart_move","smart_move"])
             self.move_time=40
-            
-    # def smart_move(self):
-    #     if self.rect.x>tank.sprite.rect.x :
-    #         if self.rect.y>tank.sprite.rect.y:
-    #             self.direction = choice( ["up","left"])
-            
-    #         elif self.rect.y<tank.sprite.rect.y:
-    #             self.direction = choice(["down","left"])
-                
-    #         else:
-    #             self.direction = "left"
-                
-    #     if self.rect.x<tank.sprite.rect.x :
-    #         if self.rect.y>tank.sprite.rect.y:
-    #             self.direction = choice(["up", "right"])
-    #         elif self.rect.y<tank.sprite.rect.y:
-    #             self.direction = choice(["down","right"])
-    #         else:
-    #             self.direction = "right"
 
     def random_movw(self):
         # if enmey_stonr_block(self):
@@ -712,9 +696,6 @@ class Enemy_tank(pygame.sprite.Sprite):
             self.image = enemy_frozen_right
      
     def update(self):
-        
-        
-        
 
         camera(self)
         if self.direction == "freeze":
@@ -869,7 +850,7 @@ def wall_kill(self_):
             
 
 max_x = length*2
-min_x = length*-1
+min_x = (length*-1)-50
 def camera(group): 
     
     #if tank.sprite.rect.x>300 and tank.sprite.rect.x <length-300:
@@ -906,6 +887,8 @@ def camera(group):
 
     # if tank.sprite.rest_pos:
     #     group.rect.x-=tank.sprite.rect.x
+        
+
         
 
 
@@ -1235,7 +1218,7 @@ key = pygame.sprite.Group()
 
 tank = pygame.sprite.GroupSingle()
 
-tank.add(Tank())
+
 
 balls =pygame.sprite.Group()
 fire =pygame.sprite.Group()
