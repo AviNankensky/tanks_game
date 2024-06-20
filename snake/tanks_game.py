@@ -24,7 +24,6 @@ weapon_index=0
 screen_2=False
 
 
-
 def star_block():
     for enemy in enemy_tank:
         if enemy.rect.x>650 and enemy.rect.x<950 and  enemy.rect.y<150 :
@@ -55,10 +54,8 @@ def flag_hit_from_ball():
 def reset_game(level_of_game): 
     
 
-    tank.add(Tank())
     
     background.empty()
-    tank.sprite.key=True
     ice_wall.empty()
     trees_wall.empty()
     wood_wall.empty()
@@ -76,11 +73,14 @@ def reset_game(level_of_game):
     # hart
     
     if level_of_game==1:
+        Coin.cont=0
+        tank.add(Tank())
         num_of_heart=3
-        pos_of_heart=[(50,width-40),(100,width-40),(150,width-40)]
+        pos_of_heart=[(375,width-40),(425,width-40),(475,width-40)]
         while num_of_heart>0:
             heart.add(Heart(pos_of_heart[num_of_heart-1]))
             num_of_heart-=1 
+    tank.sprite.key=True
   
     #add....
     pixels()
@@ -107,14 +107,6 @@ def reset_game(level_of_game):
     
     #heart
     
-
-    
-    
-        
-    
-    
-    
-
 def pixels(): 
     for r in range(0,length*2,50):   # 800
         for c in range(0,width-50,50):   #400
@@ -155,11 +147,15 @@ def display_score():
   
     return current_time
 
+def display_coin_cont():
+    coin_surf = test_font.render(f'{Coin.cont} :',False,( 0, 0, 0))
+    coin_rect = coin_surf.get_rect(center = (950,width-40))
+    screen.blit(coin_surf,coin_rect)
 
 def whell_of_elemnt_in_teh_game(level):
     current_time=display_score()
     if current_time%5==0:
-        if len(enemy_tank)< 3*level:
+        if len(enemy_tank)< 2*level:
                     
             for f in star:
                 f.tank_out()
@@ -176,7 +172,13 @@ def whell_of_elemnt_in_teh_game(level):
         if current_time%10==0 and current_time!=0 and len(enemy_boss1)==0:
             enemy_boss1.add(Boss1((randint(150,length-150),randint(150,width-150))))
 
-
+# def art_life(pos,index):
+#     list_of_img=[art_life_ing_1, art_life_ing_2, art_life_ing_3, art_life_ing_4, art_life_ing_5, art_life_ing_6]
+#     image = list_of_img[index]
+#     screen.blit(image,pos) 
+    
+    
+         
 pygame.init()
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) 
 
@@ -195,7 +197,7 @@ Background_end = pygame.transform.scale(pygame.image.load('graphics/background_e
  
 background_line = pygame.transform.scale(pygame.image.load('graphics/background_line.jpg'),(length,70)).convert_alpha()  
 
-
+coin_img_ =pygame.image.load("graphics/coin.png").convert_alpha()
 
 
 
@@ -205,13 +207,13 @@ background_line = pygame.transform.scale(pygame.image.load('graphics/background_
 
 #buttons
 ball_image = pygame.transform.scale(pygame.image.load('graphics/weapons/ball_image.jpg'),(40,40)).convert_alpha()
-ball_rect = ball_image.get_rect(center = (220,width-40))
+ball_rect = ball_image.get_rect(center = (75,width-40))
 
 ice_image = pygame.transform.scale(pygame.image.load('graphics/weapons/ice_wall.png'),(40,40)).convert_alpha()
-ice_rect = ice_image.get_rect(center = (320,width-40))
+ice_rect = ice_image.get_rect(center = (175,width-40))
 
 tnt_image = pygame.transform.scale(pygame.image.load('graphics/weapons/tnt.jpg'),(40,40)).convert_alpha()
-tnt_rect = tnt_image.get_rect(center = (420,width-40))
+tnt_rect = tnt_image.get_rect(center = (275,width-40))
 
 
 button_type="play"
@@ -363,6 +365,7 @@ while True:
             
     if game_active:
          
+        
         if not door_is_open():
             #outcome_of_enemy_tanks=0
             #num_enemy_tank=5
@@ -371,6 +374,8 @@ while True:
             # screen.blit(sutfes_level,(0,0))
             # pygame.display.update()
             # sleep(2)
+        
+            
         
         bounses.draw(screen)
 
@@ -412,8 +417,6 @@ while True:
         shield_ston.update()
         door.draw(screen)
         door.update()
-        tank.draw(screen)
-        tank.update()
         
         ice_wall.draw(screen)
         ice_wall.update()
@@ -435,13 +438,22 @@ while True:
         # game_active=door_is_open() #flag_hit_from_ball()
         
         screen.blit(background_line,(0,width-70))
+        screen.blit(coin_img_,(870,width-55))       
+        tank.draw(screen)
+        tank.update()
+        
+        coin.draw(screen)
+        coin.update()
+        
         key.draw(screen)
         key.update()
+        
         screen.blit(ball_image,ball_rect)
         screen.blit(tnt_image,tnt_rect)
         screen.blit(ice_image,ice_rect)
         heart.draw(screen)
         score =display_score()
+        display_coin_cont()
         if weapon_type=='ball'  :
             pygame.draw.rect(screen,(0,0,0),ball_rect,4)
         if weapon_type=='ice'  :
@@ -452,6 +464,7 @@ while True:
         
         if not heart:
             game_active=False
+            
       
         #screen.blit(sutfes_level,(0,0))
         #game_active=door_is_open()
@@ -465,6 +478,7 @@ while True:
         
     
     else:
+        level=1
         # background.empty()
         # door.empty()
         # key.empty()

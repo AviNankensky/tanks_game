@@ -1,7 +1,8 @@
 
 from tkinter import *
 from asyncio.windows_events import NULL
-from random import choice 
+from random import choice
+from typing import Any 
 import pygame
 
 
@@ -13,9 +14,6 @@ win.geometry("650x250")
 width =  win.winfo_screenheight()
 length = win.winfo_screenwidth() 
 
-
-
-         
 
 class Background(pygame.sprite.Sprite):
     def __init__(self,pos,img):
@@ -47,10 +45,16 @@ class Tank(pygame.sprite.Sprite):
         self.direction="up"
         self.activ=False
         self.type_=""
-        self.rest_pos=False
+        
+        self.resistance= 5
         
         self.tank_speed = 1
+        self.life_bar_width = 200
         
+    def life_bar(self):
+        pygame.draw.rect(screen,(255,0,0),(500,width-50,200,20))
+        pygame.draw.rect(screen,(0,128,0),(500,width-50,self.life_bar_width,20)) 
+     
     def input(self):
         
         self.keys = pygame.key.get_pressed()
@@ -124,18 +128,46 @@ class Tank(pygame.sprite.Sprite):
             if  self.rect.x<50:
                 self.rect.x+=1 
             
-                
-              
-    
     def reset_game(self):
-        if bollet_hit_player():
-            self.rest_pos=True
+        
+        if pygame.sprite.spritecollide(self,fire,False):
+            
+            self.resistance-=1
+            fire.empty()
+            self.life_bar_width -= 40
+
+  
+        balls_box=pygame.sprite.spritecollide(self,balls,False)
+        for ball in balls_box:
+            if ball.type=="enemy_ball":
+               ball_animation.add(Ball_animation((ball.rect.x,ball.rect.y)))   
+               ball.kill()
+               self.resistance-=1
+               self.life_bar_width -= 40
+               
+               
+        if self.resistance==0:
+            self.resistance=5
             self.rect.x=50
             self.rect.y=50
+            self.life_bar_width = 200
             
-        else:
-            self.rest_pos=False
+            for hert in heart:
+                hert.kill()
+                break 
             
+                    
+
+    
+    # def reset_game_(self):
+    #     if bollet_hit_player():
+    #         self.rest_pos=True
+    #         self.rect.x=50
+    #         self.rect.y=50
+
+            
+
+
     # def screen_border(self):
     #     if self.rect.x > length*3 or self.rect.x<0:
     #         self.activ=False
@@ -145,7 +177,7 @@ class Tank(pygame.sprite.Sprite):
             
             
     def update(self):
-        
+        self.life_bar()
         #self.screen_border()
         self.reset_game()
         self.input()     
@@ -424,15 +456,30 @@ class Boss1(pygame.sprite.Sprite):
         self.tank_speed=1
         self.shoot_time=0
         wall_kill(self)
+        self.resistance=6
+        self.life_bar_width=100
         
+    def life_bar(self):
+        pygame.draw.rect(screen,(255,0,0),(self.rect.x-25,self.rect.y+50,100,10))
+        
+        pygame.draw.rect(screen,(0,128,0),(self.rect.x-25,self.rect.y+50,self.life_bar_width,10)) 
+     
+
     def dstroy(self):
         collided_balls = pygame.sprite.spritecollide(self, balls, False)
         for ball in collided_balls:
             if ball.type == "player_ball":
-                if len(key)==0:
-                    key.add(Key((self.rect.x, self.rect.y), True))
-                self.kill()
-                break
+                self.resistance-=1
+                coin.add(Coin((self.rect.x,self.rect.y)))
+                self.life_bar_width-=16
+                ball.kill()
+                if self.resistance==0:
+                    if len(key)==0:
+                        key.add(Key((self.rect.x, self.rect.y), True))
+                    self.kill()
+                
+                
+                        
     
     def time_to_move(self):
         self.move_time-=1
@@ -550,6 +597,7 @@ class Boss1(pygame.sprite.Sprite):
             self.shoot_time=40
 
     def update(self):
+        self.life_bar()
         camera(self)
         self.dstroy()
         self.time_to_shoot()
@@ -575,7 +623,15 @@ class Enemy_tank(pygame.sprite.Sprite):
         self.shoot_time=0
         self.move_time=0
         self.type="enemy"
+        self.resistance= 3
+        self.life_bar_width=50
         
+    def get_resistance(self):
+        self.resistance-=1
+        self.life_bar_width-=16
+        coin.add(Coin((self.rect.x,self.rect.y)))
+        return self.resistance
+
     def time_to_shoot(self):
         self.shoot_time-=1
         if self.shoot_time<0:
@@ -679,6 +735,7 @@ class Enemy_tank(pygame.sprite.Sprite):
     
     def dostroy(self):
         bollet_hit_enemy_tank()
+  
             
     def freeze(self):
         self.enemy_tank=frozen_tank_image
@@ -694,9 +751,13 @@ class Enemy_tank(pygame.sprite.Sprite):
             
         if self.direction_last =="right":
             self.image = enemy_frozen_right
+            
+    def life_bar(self):
+        pygame.draw.rect(screen,(255,0,0),(self.rect.x-5,self.rect.y+37,50,10))
+        pygame.draw.rect(screen,(0,128,0),(self.rect.x-5,self.rect.y+37,self.life_bar_width,10)) 
      
     def update(self):
-
+        self.life_bar( )
         camera(self)
         if self.direction == "freeze":
             self.freeze()
@@ -709,7 +770,57 @@ class Enemy_tank(pygame.sprite.Sprite):
         self.random_movw()
         self.dostroy()
         self.time_to_move()
+
+class Coin(pygame.sprite.Sprite):
+    cont=0
+    def __init__(self, pos):
+        super().__init__()
+        self.image = coin_img
+        self.rect = self.image.get_rect(center = pos)
+        self.gravity_x=1
+        self.gravity_y=1
+        Coin.cont+=1
+
         
+
+    def movment(self):
+        self.gravity_x+=1
+        
+     
+        if self.rect.x>900:
+            self.rect.x-=self.gravity_x
+            
+        if self.rect.x<900:
+            self.rect.x+=self.gravity_x
+        
+            
+        if self.rect.y<width-60:
+            self.rect.y+=self.gravity_x
+            
+        if self.rect.y>width-100 and self.rect.x<950 and self.rect.x>850:
+            self.kill()
+            
+        
+            
+
+
+    def update(self):
+        self.movment()
+        
+
+# class Coin_conter(pygame.sprite.Sprite):
+#     def __init__(self, pos):
+#         super().__init__()
+#         self.image = coin_img
+#         self.rect = self.image.get_rect(center = pos)
+        
+    
+        
+
+
+#     def update(self):
+#         pass
+     
 class Door(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__()
@@ -740,7 +851,7 @@ class Key(pygame.sprite.Sprite):
     def key_is_geting(self):
         if pygame.sprite.spritecollide(self,tank,False):
             tank.sprite.key=False
-            key.add(Key((length-300,width-40),False))
+            key.add(Key((800,width-40),False))
             self.kill()
             
     def update(self):
@@ -811,7 +922,6 @@ class Bounse(pygame.sprite.Sprite):
             
 
 
-            
 def smart_move(self):
     direction = choice( ["up","left","right","down"])
     if self.rect.x>tank.sprite.rect.x :
@@ -889,7 +999,6 @@ def camera(group):
     #     group.rect.x-=tank.sprite.rect.x
         
 
-        
 
 
 def stone_block(tank_self):
@@ -1016,22 +1125,16 @@ def enmey_stonr_block(enemy_self):
     return False
         
 def bollet_hit_enemy_tank():
-    
-        
-        
-            
-    
+  
     for ball in balls:
         if ball.type=="player_ball":
-            # if pygame.sprite.spritecollide(ball,enemy_boss1,False):
-            #     key.add(Key(enemy_boss1.sprites.rect.x,enemy_boss1.sprites.rect.y,True))
-            #     enemy_boss1.empty()
             enemy_tank_kill= pygame.sprite.spritecollide(ball,enemy_tank,False)
             
             for enemy in enemy_tank_kill:
-                enemy.kill()
                 ball_animation.add(Ball_animation((ball.rect.x,ball.rect.y)))
                 ball.kill()
+                if (enemy.get_resistance()==0):
+                    enemy.kill()
                 return True
     return False       
 
@@ -1069,8 +1172,13 @@ def tnt_exploded():
         return len(enemy_explos)
        
     return 0
+
+
+
   
 def imags():
+
+
     global explosion_1,explosion_2,explosion_3,explosion_4,explosion_5,explosion_6,explosion_7,explosion_8
     explosion_1 = pygame.transform.scale(pygame.image.load('graphics/explosion/explosion_1.png'),(200,200)).convert_alpha()
     explosion_2 = pygame.transform.scale(pygame.image.load('graphics/explosion/explosion_2.png'),(200,200)).convert_alpha()
@@ -1138,9 +1246,11 @@ def imags():
     ice_image = pygame.transform.scale(pygame.image.load('graphics/weapons/ice_wall.png'),(50,50)).convert_alpha()  
 
 
-    global star_
+    global star_, coin_img
     star_ =pygame.image.load("graphics/star/star.jpg").convert_alpha()
-        
+    coin_img =pygame.image.load("graphics/coin.png").convert_alpha()
+    
+    
     #enemy
     global boss_img, boss1_left, boss1_up, boss1_down, boss1_right
     boss_img=pygame.image.load('graphics/enemy_tank/enemy_2_boss1/boss1.png').convert_alpha()
@@ -1164,8 +1274,7 @@ def imags():
     enemy_frozen_left=pygame.transform.rotate(frozen_tank_image,90)
     enemy_frozen_up=pygame.transform.rotate(frozen_tank_image,0)
     enemy_frozen_down=pygame.transform.rotate(frozen_tank_image,180)
-    enemy_frozen_right=pygame.transform.rotate(frozen_tank_image,270)
-    
+    enemy_frozen_right=pygame.transform.rotate(frozen_tank_image,270) 
     
 def door_is_open():
     
@@ -1182,8 +1291,11 @@ def exit_space_is_empty(self_):
             
         return False
     return True
+
+
 #groups
 background = pygame.sprite.Group()
+coin = pygame.sprite.Group()
 
 bounses = pygame.sprite.Group()
 
@@ -1214,13 +1326,10 @@ door = pygame.sprite.Group()
 
 key = pygame.sprite.Group()
 
-
-
 tank = pygame.sprite.GroupSingle()
 
-
-
 balls =pygame.sprite.Group()
+
 fire =pygame.sprite.Group()
 
 
