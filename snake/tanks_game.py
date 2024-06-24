@@ -54,7 +54,6 @@ def flag_hit_from_ball():
 def reset_game(level_of_game): 
     
 
-    
     background.empty()
     ice_wall.empty()
     trees_wall.empty()
@@ -68,7 +67,8 @@ def reset_game(level_of_game):
     enemy_boss1.empty()
     key.empty()
     door.empty()
-    
+    Tank.flag=True
+    Tank.cont_movment=0
 
     # hart
     
@@ -80,11 +80,15 @@ def reset_game(level_of_game):
         while num_of_heart>0:
             heart.add(Heart(pos_of_heart[num_of_heart-1]))
             num_of_heart-=1 
+    #else:
+    door.add(Door(length*2-40,300))
+    tank.sprite.rect.x=60
+    tank.sprite.rect.y=150
+        
     tank.sprite.key=True
   
     #add....
     pixels()
-    door.add(Door(0,150))
     
     #enemy in...
     
@@ -112,11 +116,11 @@ def pixels():
         for c in range(0,width-50,50):   #400
             type_pixel =choice(['stone','shield_stone','wood',"empty",'trees','wood','wood',"empty","","",""])
             
-            if c==0  or c>width-125 or r==0 and c!=150 or r >length*2-50:
+            if c==0  or c>width-125 or r==0 and c!=150 or r==50 and c!=150 or r==100 and c!=150 or r >length*2-150 and c!=300:
                 stone_wall.add(Stone_wall(r,c)) 
             elif c==150 and( r == 150  or r==1000 or r==1500):
                 star.add(Star((r,c)))
-            elif r<=150 and c<=300 or r==750 and c==0 or c==150 or(r==0 and (c== 150 or c==200 or c==100) or r==50 and (c==100 or c==150 or c==200 ) )  :
+            elif r<=150 and c<=300 or r==750 and c==0 or c==150 or(r==0 and (c== 150 or c==200 or c==100) or r==50 and (c==100 or c==150 or c==200 ) or r >length*2-300 and c==300)  :
                 NULL
             
             else:
@@ -138,10 +142,10 @@ def pixels():
                 if type_pixel=='shield_stone':
                     shield_ston.add(Shield_stone_wall((r,c)))
   
-def display_score():
+def display_score(): 
     
     current_time = int(pygame.time.get_ticks() / 1000) -start_time
-    score_surf = test_font.render(f'Score: {current_time}',False,( 0, 0, 0))
+    score_surf = test_font.render(f'Score: {current_time}',False,( 0, 0, 0)) 
     score_rect = score_surf.get_rect(center = (length-150,width-40))
     screen.blit(score_surf,score_rect)
   
@@ -172,10 +176,7 @@ def whell_of_elemnt_in_teh_game(level):
         if current_time%10==0 and current_time!=0 and len(enemy_boss1)==0:
             enemy_boss1.add(Boss1((randint(150,length-150),randint(150,width-150))))
 
-# def art_life(pos,index):
-#     list_of_img=[art_life_ing_1, art_life_ing_2, art_life_ing_3, art_life_ing_4, art_life_ing_5, art_life_ing_6]
-#     image = list_of_img[index]
-#     screen.blit(image,pos) 
+
     
     
          
@@ -240,6 +241,7 @@ sutfes_level= pygame.Surface((width,length),pygame.SRCALPHA)
 pygame.draw.rect(sutfes_level,(128,128,128,180),(100,100,300,300))
 
 while True:
+    
     whell_of_elemnt_in_teh_game(level)
     if bollet_hit_enemy_tank():
         outcome_of_enemy_tanks+=1

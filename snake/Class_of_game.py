@@ -34,26 +34,30 @@ class Background(pygame.sprite.Sprite):
         camera(self)
 tank_image = pygame.image.load('graphics/tank/tank.png').convert_alpha()  
 class Tank(pygame.sprite.Sprite):
-    
+    cont_movment=0
+    flag = False
     def __init__( self): 
         super().__init__()
         
         self.key=True
         self.tank_image=tank_image
         self.image = self.tank_image
-        self.rect = self.image.get_rect(center = (75,75))
+        self.rect = self.image.get_rect(topleft = (60,150))
         self.direction="up"
         self.activ=False
         self.type_=""
-        
+        self.pos_rest=False
         self.resistance= 5
         
         self.tank_speed = 1
         self.life_bar_width = 200
         
+
+            
+        
     def life_bar(self):
         pygame.draw.rect(screen,(255,0,0),(500,width-50,200,20))
-        pygame.draw.rect(screen,(0,128,0),(500,width-50,self.life_bar_width,20)) 
+        pygame.draw.rect(screen,(0,128,0,50),(500,width-50,self.life_bar_width,20)) 
      
     def input(self):
         
@@ -62,10 +66,12 @@ class Tank(pygame.sprite.Sprite):
             self.activ=False
             if self.direction=="left":
                 self.rect.x+=1
+                Tank.cont_movment+=1
                 self.type_="player_blocked"
                 
             if self.direction=="right":
                 self.rect.x-=1
+                Tank.cont_movment-=1
                 self.type_="player_blocked"
                 
             if self.direction=="up":
@@ -86,10 +92,10 @@ class Tank(pygame.sprite.Sprite):
                 self.activ=True
                 self.image = pygame.transform.rotate(self.tank_image,90)
                 self.rect.x -= self.tank_speed
-                if self.rect.x< 0:
-                    
-                    self.rect.x = 0
+                Tank.cont_movment-=1
+                if Tank.cont_movment<0:
                     self.activ=False
+                    Tank.cont_movment+=1
                     
             
                 
@@ -98,10 +104,10 @@ class Tank(pygame.sprite.Sprite):
                 self.activ=True
                 self.image = pygame.transform.rotate(self.tank_image,270)
                 self.rect.x += self.tank_speed
-                if self.rect.x >length-45:
-                    
-                    self.rect.x=length-45
-                    #self.activ=False
+                Tank.cont_movment+=1
+                if Tank.cont_movment>length+50:
+                    Tank.cont_movment-=1
+                    self.activ=False
             
             elif self.keys[pygame.K_UP]:
                 self.direction="up"
@@ -148,35 +154,27 @@ class Tank(pygame.sprite.Sprite):
                
         if self.resistance==0:
             self.resistance=5
-            self.rect.x=50
-            self.rect.y=50
+            self.rect.x=75
+            self.rect.y=150
             self.life_bar_width = 200
-            
+            self.pos_rest=True
             for hert in heart:
                 hert.kill()
                 break 
+        else:
+            self.pos_rest=False
+            
+            
             
                     
 
     
-    # def reset_game_(self):
-    #     if bollet_hit_player():
-    #         self.rest_pos=True
-    #         self.rect.x=50
-    #         self.rect.y=50
 
-            
-
-
-    # def screen_border(self):
-    #     if self.rect.x > length*3 or self.rect.x<0:
-    #         self.activ=False
-    #     else:
-    #         self.activ=True
             
             
             
     def update(self):
+        
         self.life_bar()
         #self.screen_border()
         self.reset_game()
@@ -367,6 +365,7 @@ class Ice_wall(pygame.sprite.Sprite):
         self.animation()
         
 class Wood_wall(pygame.sprite.Sprite):
+    
     def __init__(self,x,y):
         super().__init__()
         
@@ -378,8 +377,8 @@ class Wood_wall(pygame.sprite.Sprite):
         self.rect.x=x
         self.rect.y=y
         self.flag=""
-        #self.visible=False
 
+        
     def destroy(self):
         wood_wall_bomber()     
         
@@ -387,10 +386,11 @@ class Wood_wall(pygame.sprite.Sprite):
 
     def update(self):
         camera(self)
-
+        
         self.destroy()
         
 class Stone_wall(pygame.sprite.Sprite):
+ 
     def __init__(self,x,y):
         super().__init__()
         
@@ -399,7 +399,6 @@ class Stone_wall(pygame.sprite.Sprite):
         self.rect.x=x
         self.rect.y=y
 
-        
         
     
     def update(self):
@@ -806,21 +805,7 @@ class Coin(pygame.sprite.Sprite):
 
     def update(self):
         self.movment()
-        
-
-# class Coin_conter(pygame.sprite.Sprite):
-#     def __init__(self, pos):
-#         super().__init__()
-#         self.image = coin_img
-#         self.rect = self.image.get_rect(center = pos)
-        
-    
-        
-
-
-#     def update(self):
-#         pass
-     
+             
 class Door(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__()
@@ -957,35 +942,14 @@ def wall_kill(self_):
     wall= pygame.sprite.spritecollide(self_,wood_wall,False)
     for w in wall:
         w.kill()
-            
+  
 
-max_x = length*2
-min_x = (length*-1)-50
 def camera(group): 
-    
-    #if tank.sprite.rect.x>300 and tank.sprite.rect.x <length-300:
-    if tank.sprite.activ:
-        
-        #tank.sprite.tank_speed=2
+    if tank.sprite.activ :
         if tank.sprite.direction=="right":
-            
-
-            if group.rect.x>min_x:
-                group.rect.x-=1
-            else:
-                tank.sprite.activ=False
-                
-            
+            group.rect.x-=1   
         if tank.sprite.direction=="left" :
-             
-            
-            if group.rect.x<max_x:
-                group.rect.x+=1        
-            else:
-                tank.sprite.activ=False
-    # else:
-    #     tank.sprite.tank_speed=1
-                
+                group.rect.x+=1     
     if tank.sprite.type_=="player_blocked":
         if tank.sprite.direction=="left":
             group.rect.x-=1
@@ -993,11 +957,15 @@ def camera(group):
         if tank.sprite.direction=="right":
             group.rect.x+=1
             
-    
-
-    # if tank.sprite.rest_pos:
-    #     group.rect.x-=tank.sprite.rect.x
+    if tank.sprite.pos_rest:
+        group.rect.x+=Tank.cont_movment
+        Tank.flag=True
         
+    elif Tank.flag :
+        Tank.cont_movment=0
+        Tank.flag=False
+        
+
 
 
 
