@@ -1,10 +1,10 @@
 from asyncio.windows_events import NULL
 
-import pygame 
+import pygame
 from sys import exit
 from random import choice ,randint
 from tkinter import *
-from Class_of_game import *
+from class_of_game import *
 
 
 
@@ -14,12 +14,13 @@ win.geometry("650x250")
 width =  win.winfo_screenheight()
 length = win.winfo_screenwidth() 
 outcome_of_enemy_tanks=0
-game_active=False
 start_time=0
 score=0
 weapon_type = 'ball'
 weapon_list=["ball","ice","tnt"]
 weapon_index=0
+
+game_active=False
 
 screen_2=False
 
@@ -31,18 +32,12 @@ def star_block():
             return False
     else:
         return True   
-
-    
-    
-            
+         
 def ice_wall_bomber(): 
     for enemy in enemy_tank:
         if pygame.sprite.spritecollide(enemy,ice_wall,False):
             enemy.kill()
-        
-        
-  
-    
+            
 def flag_hit_from_ball(): 
     for ball in balls:
         if pygame.sprite.spritecollide(ball,door,False):
@@ -89,7 +84,7 @@ def reset_game(level_of_game):
   
     #add....
     pixels()
-    
+    button.add(Button(300,300,200,50,(255,0,0),"entnr"))
     #enemy in...
     
     
@@ -175,10 +170,6 @@ def whell_of_elemnt_in_teh_game(level):
 
         if current_time%10==0 and current_time!=0 and len(enemy_boss1)==0:
             enemy_boss1.add(Boss1((randint(150,length-150),randint(150,width-150))))
-
-
-    
-    
          
 pygame.init()
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) 
@@ -190,7 +181,7 @@ star_x=775
 
 imags()
 
-Background_start = pygame.transform.scale(pygame.image.load('graphics/Background of the beginning.jpg'),(length,width)).convert_alpha()  
+Background_start = pygame.transform.scale(pygame.image.load('graphics/Background_AI.jpeg'),(length,width)).convert_alpha()  
 
 
 Background_end = pygame.transform.scale(pygame.image.load('graphics/background_end.png'),(length,width)).convert_alpha()  
@@ -235,12 +226,14 @@ enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(enemy_timer,3000)
 
 #background
-
+name_text=""
 level=1
 sutfes_level= pygame.Surface((width,length),pygame.SRCALPHA)
 pygame.draw.rect(sutfes_level,(128,128,128,180),(100,100,300,300))
+screen_main("start")
 
 while True:
+    #print(game_active)
     
     whell_of_elemnt_in_teh_game(level)
     if bollet_hit_enemy_tank():
@@ -320,45 +313,77 @@ while True:
         
             
         else:
-            if button_type=="screen 2":
-                button_type="play"
-            start_time = int(pygame.time.get_ticks() / 1000)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    #rect = pygame.draw.rect(screen,'black',exit_rect,40)
-                    button_type="exit"
-                    exit_image=pygame.image.load('graphics/buttons/exit_2.png').convert_alpha()
-                    play_image=pygame.image.load('graphics/buttons/play_1.png').convert_alpha()
+          
+            
+            
+            for i in button:
+                if i.click:
+                        
+                    if event.type == pygame.KEYDOWN:
+                        if i.text==i.type_:
+                            i.text=""
+                        input_text=i.text
+                        if event.key == pygame.K_BACKSPACE and len(input_text)!=0:
+                            input_text = input_text[:-1]
+                        else:
+                            input_text += event.unicode
+                        i.SetText(input_text)
+                        
+                        i.update()
+                        break  
+
+
+
+            for i in button:
+                   
+                if i.game_activ:
+                    print("##################test#####################")
+                    reset_game(1)
+                    game_active=True
+           
+
+            
+                
+            
+            # if button_type=="screen 2":
+            #     button_type="play"
+            # start_time = int(pygame.time.get_ticks() / 1000)
+            # if event.type == pygame.KEYDOWN:
+            #     if event.key == pygame.K_DOWN:
+            #         #rect = pygame.draw.rect(screen,'black',exit_rect,40)
+            #         button_type="exit"
+            #         exit_image=pygame.image.load('graphics/buttons/exit_2.png').convert_alpha()
+            #         play_image=pygame.image.load('graphics/buttons/play_1.png').convert_alpha()
                     
                 
                 
-                if event.key == pygame.K_UP:
-                    button_type="play"
+            #     if event.key == pygame.K_UP:
+            #         button_type="play"
                     
-                    exit_image=pygame.image.load('graphics/buttons/exit_1.png').convert_alpha()
-                    play_image=pygame.image.load('graphics/buttons/play_2.png').convert_alpha()
+            #         exit_image=pygame.image.load('graphics/buttons/exit_1.png').convert_alpha()
+            #         play_image=pygame.image.load('graphics/buttons/play_2.png').convert_alpha()
                     
-                if score > 0  and screen_2== False:
-                    button_type ="screen 2"
+            #     if score > 0  and screen_2== False:
+            #         button_type ="screen 2"
                     
-                if  event.key == pygame.K_SPACE  :
+            #     if  event.key == pygame.K_SPACE  :
                     
-                    if button_type =="screen 2":
-                        screen_2 = True
+            #         if button_type =="screen 2":
+            #             screen_2 = True
                     
 
-                    if button_type=="play":
+            #         if button_type=="play":
                         
-                        game_active=True
+            #             game_active=True
                         
-                        outcome_of_enemy_tanks=0
-                        #num_enemy_tank=5
-                        reset_game(1)
+            #             outcome_of_enemy_tanks=0
+            #             #num_enemy_tank=5
+            #             reset_game(1)
                         
                         
-                    if button_type=="exit":  
-                        pygame.quit()
-                        exit()
+            #         if button_type=="exit":  
+            #             pygame.quit()
+            #             exit()
                 
       
 
@@ -366,6 +391,7 @@ while True:
             
             
     if game_active:
+       
          
         
         if not door_is_open():
@@ -480,6 +506,7 @@ while True:
         
     
     else:
+        
         level=1
         # background.empty()
         # door.empty()
@@ -487,10 +514,13 @@ while True:
         # enemy_boss1.empty()
         if score == 0 or screen_2 :
             screen.blit(Background_start,(0,0))
-
-            screen.blit(play_image,play_rect)
+            button.draw(screen)
+            button.update()
+            # if :
+            #     game_active = True
+            #screen.blit(play_image,play_rect)
         
-            screen.blit(exit_image,exit_rect)
+            #screen.blit(exit_image,exit_rect)
         else :
              screen.fill(( 0, 0, 0)) 
              screen.blit(Background_end,(50,20)) 

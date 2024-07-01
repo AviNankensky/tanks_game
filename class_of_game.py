@@ -1,12 +1,11 @@
-
+from Database_connection import *
+from re import I
 from tkinter import *
 from asyncio.windows_events import NULL
 from random import choice
 from typing import Any 
 import pygame
-
-
-
+print("bjgjjvuhgvjv")
 
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) 
 win= Tk()
@@ -14,6 +13,138 @@ win.geometry("650x250")
 width =  win.winfo_screenheight()
 length = win.winfo_screenwidth() 
 
+class Button(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, color, text ,text_color=(0,0,0) ,font_size=24 ):
+        super().__init__()
+        self.text_color=text_color
+        self.image = pygame.Surface([width, height],pygame.SRCALPHA)
+        self.rect=self.image.get_rect(center = (x,y))
+        #self.image.fill(color)
+        self.rect.x=x
+        self.rect.y=y
+        self.width=width
+        self.height=height
+        self.color=color
+        self.text=text
+        self.game_activ=False
+        self.type_=text
+        self.font=pygame.font.Font(None, font_size)
+        self.click=False
+
+
+
+
+    def drow(self):
+        pygame.draw.rect(self.image,self.color,pygame.Rect(0,0,self.width,self.height),border_radius=20)
+        pygame.draw.rect(self.image,(105, 105, 105),pygame.Rect(0,0,self.width,self.height),4,border_radius=20)
+        
+
+    def text_(self):
+        text_surface = self.font.render(self.text, True, self.text_color)
+        text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
+        self.image.blit(text_surface, text_rect)
+
+    def hover(self):
+       
+        mous_pos=pygame.mouse.get_pos()
+        if self.rect.collidepoint(mous_pos):
+            pygame.draw.rect(self.image,(255,255,255),pygame.Rect(0,0,self.width,self.height),10,border_radius=20)
+
+
+    def onclick(self):
+       
+        mous_pos=pygame.mouse.get_pos()
+        if self.rect.collidepoint(mous_pos):
+         if pygame.mouse.get_pressed()[0]==1 and self.click==False:
+
+            for i in button:
+                    if i.type_!=self.type_:
+                        
+                        i.click=False    
+            self.click=True
+
+            if self.type_=="log in":
+                self.click=True
+                name_text=""
+                password_text=""
+                for i in button:
+                    if i.type_=="name":
+                        name_text=i.text
+                for i in button:
+                    if i.type_=="password":
+                        password_text=i.text
+
+                
+                if checks_if_user_exists(name_text):
+                # if checks_if_user_exists(name_text,password_text):
+                    screen_main("log in")
+
+            if self.type_=="sing up":
+                self.click=True
+                name_text=""
+                password_text=""
+
+                for i in button:
+                    if i.type_=="name":
+                        name_text=i.text
+
+                for i in button:
+                    if i.type_=="password":
+                        password_text=i.text
+                        
+
+                # if checks_if_user_exists(name_text,password_text):    
+                if checks_if_user_exists(name_text):    
+                    for i in button:
+                        if i.type_=="name":
+                            i.text=""
+
+                    for i in button:
+                        if i.type_=="password":
+                            i.text=""
+
+
+                elif adds_a_user(name_text,password_text):
+                    screen_main("log in")
+                
+            if self.type_=="back":
+                screen_main("start")
+            if self.text=="guest":
+                screen_main("guest")
+            if self.text=="enter":
+                self.click=True
+                self.game_activ=True
+            if self.text=="exit":
+                self.click=True
+                pygame.quit()
+                exit()
+            # if self.type_=="name":
+            #     for i in button:
+            #         if i.type_!=self.type_:
+                        
+            #             i.click=False
+                            
+            #     self.click=True
+
+            # if self.type_=="password":
+            #     for i in button:
+            #         if i.type_!=self.type_:
+            #             i.click=False
+            #     self.click=True
+
+                #print(self.text)
+                
+    def SetText(self,NewText):
+        self.text=NewText
+        self.text_color=(0,0,0)
+ 
+
+    
+    def update(self):
+        self.drow()
+        self.onclick()
+        self.text_()
+        self.hover()
 
 class Background(pygame.sprite.Sprite):
     def __init__(self,pos,img):
@@ -62,7 +193,7 @@ class Tank(pygame.sprite.Sprite):
     def input(self):
         
         self.keys = pygame.key.get_pressed()
-        if stone_block(self) : 
+        if stone_blpock(self) : 
             self.activ=False
             if self.direction=="left":
                 self.rect.x+=1
@@ -466,6 +597,9 @@ class Boss1(pygame.sprite.Sprite):
 
     def dstroy(self):
         collided_balls = pygame.sprite.spritecollide(self, balls, False)
+        # for  i in tnt_explosion:
+        #     tnt__ = pygame.sprite.spritecollide(self.tnt_explosion,False)
+            
         for ball in collided_balls:
             if ball.type == "player_ball":
                 self.resistance-=1
@@ -577,7 +711,7 @@ class Boss1(pygame.sprite.Sprite):
             #     self.direction=choice(["up","right","down"])
             
     def time_to_shoot(self):
-        self.shoot_time-=1;
+        self.shoot_time-=1
         if self.shoot_time<0:
             
         
@@ -905,6 +1039,36 @@ class Bounse(pygame.sprite.Sprite):
             self.image=self.heart
             self.rect = self.heart.get_rect(center = (self.x,self.y))
             
+def screen_main(type_):
+    
+    coler=(255,0,0)
+    # coler=(205,92,92)
+    button.empty()
+    if type_=="start":
+        button.add(Button(length/2-150,100,300,50,coler,"name",(211,211,211)))
+        button.add(Button(length/2-150,200,300,50,coler,"password",(211,211,211)))
+
+        button.add(Button(length/2-150,300,100,100,coler,"log in"))
+        button.add(Button(length/2,300,100,100,coler,"sing up"))
+        button.add(Button(length/2+150,300,100,100,coler,"guest"))
+        
+    if type_=="sing up" or type_=="log in" or type_=="guest":
+        button.add(Button(length/2-100,100,200,50,(255,0,0),"enter"))
+        button.add(Button(length/2-100,200,200,50,(255,0,0),"exit"))
+        button.add(Button(length/2-100,300,200,50,(255,0,0),"shop"))
+
+        button.add(Button(length/2-100,400,200,50,(255,0,0),"back"))
+    # if type_=="loogin screen":
+    #     button.add(Button(300,200,200,50,(255,0,0),"new name"))
+    #     button.add(Button(300,250,200,50,(255,0,0),"new password"))
+    if type_=="guest screen":
+        print("test_______________________________")
+        return True
+    return False
+
+        
+        
+
 
 
 def smart_move(self):
@@ -965,11 +1129,7 @@ def camera(group):
         Tank.cont_movment=0
         Tank.flag=False
         
-
-
-
-
-def stone_block(tank_self):
+def stone_blpock(tank_self):
     
     if pygame.sprite.spritecollide(tank_self,door,False) and tank_self.key:
         return True
@@ -1055,9 +1215,7 @@ def shield_stone_wall_block_balls():
                 ston.kill()   
             ball.kill()
             ball_animation.add(Ball_animation((ball.rect.x,ball.rect.y)))
-            
-
- 
+             
 def enmey_stonr_block(enemy_self):
     
    
@@ -1141,9 +1299,6 @@ def tnt_exploded():
        
     return 0
 
-
-
-  
 def imags():
 
 
@@ -1264,7 +1419,7 @@ def exit_space_is_empty(self_):
 #groups
 background = pygame.sprite.Group()
 coin = pygame.sprite.Group()
-
+button = pygame.sprite.Group()
 bounses = pygame.sprite.Group()
 
 heart = pygame.sprite.Group()
