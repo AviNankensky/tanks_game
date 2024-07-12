@@ -5,7 +5,7 @@ from sys import exit
 from random import choice ,randint
 from tkinter import *
 from class_of_game import *
-
+from Database_connection import *
 
 
 
@@ -68,7 +68,7 @@ def reset_game(level_of_game):
     # hart
     
     if level_of_game==1:
-        Coin.cont=0
+        # Coin.cont=0
         tank.add(Tank())
         num_of_heart=3
         pos_of_heart=[(375,width-40),(425,width-40),(475,width-40)]
@@ -143,11 +143,10 @@ def display_score():
     score_surf = test_font.render(f'Score: {current_time}',False,( 0, 0, 0)) 
     score_rect = score_surf.get_rect(center = (length-150,width-40))
     screen.blit(score_surf,score_rect)
-  
     return current_time
 
 def display_coin_cont():
-    coin_surf = test_font.render(f'{Coin.cont} :',False,( 0, 0, 0))
+    coin_surf = test_font.render(f'{data.coins} :',False,( 0, 0, 0)) #Coin.cont #data.coins
     coin_rect = coin_surf.get_rect(center = (950,width-40))
     screen.blit(coin_surf,coin_rect)
 
@@ -250,16 +249,17 @@ while True:
             pygame.quit()
             exit()
         if game_active:
+            # # data.push()
             screen_2=False
             if event.type == pygame.KEYDOWN :
                 if event.key == pygame.K_1:
                     weapon_type=weapon_list[0]
                     weapon_index=-1
-                
+
                 if event.key == pygame.K_2:
                     weapon_type=weapon_list[1]
                     weapon_index=-1
-                    
+
                     
                 
                     
@@ -321,7 +321,7 @@ while True:
                         
                     if event.type == pygame.KEYDOWN:
                         if i.text==i.type_:
-                            i.text=""
+                            i.text=" "
                         input_text=i.text
                         if event.key == pygame.K_BACKSPACE and len(input_text)!=0:
                             input_text = input_text[:-1]

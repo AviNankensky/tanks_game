@@ -5,6 +5,10 @@ from asyncio.windows_events import NULL
 from random import choice
 from typing import Any 
 import pygame
+
+from Database_connection import Information, conn,data
+global data
+# data = None
 print("bjgjjvuhgvjv")
 
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN) 
@@ -12,6 +16,11 @@ win= Tk()
 win.geometry("650x250")
 width =  win.winfo_screenheight()
 length = win.winfo_screenwidth() 
+
+def create_global_data(name_text):
+    global data
+    data = Information(conn, name_text)
+    data.pull()
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, color, text ,text_color=(0,0,0) ,font_size=24 ):
@@ -28,6 +37,7 @@ class Button(pygame.sprite.Sprite):
         self.text=text
         self.game_activ=False
         self.type_=text
+        # self.font = pygame.font.Font("font/arial.ttf", font_size)
         self.font=pygame.font.Font(None, font_size)
         self.click=False
 
@@ -51,88 +61,120 @@ class Button(pygame.sprite.Sprite):
             pygame.draw.rect(self.image,(255,255,255),pygame.Rect(0,0,self.width,self.height),10,border_radius=20)
 
 
+#     def onclick(self):
+       
+#         mous_pos=pygame.mouse.get_pos()
+#         if self.rect.collidepoint(mous_pos):
+#             if pygame.mouse.get_pressed()[0]==1 and self.click==False:
+
+#                 for i in button:
+#                         if i.type_!=self.type_:
+                            
+#                             i.click=False    
+#                 self.click=True
+
+#                 if self.type_=="log in":
+#                     # self.click=True
+#                     name_text=" "
+#                     password_text=" "
+#                     for i in button:
+#                         if i.type_=="name":
+#                             name_text=i.text
+#                     for i in button:
+#                         if i.type_=="password":
+#                             password_text=i.text
+
+#                     if name_text != " ":
+#                         # if checks_if_user_exists(name_text):
+#                         if checks_if_user_exists(name_text,password_text):                   
+#                             global data
+#                             data.name=name_text
+#                             data.pull()
+#                             screen_main("log in")
+
+#                 if self.type_=="sing up":
+#                     # self.click=True
+#                     name_text=" "
+#                     password_text=" "
+
+#                     for i in button:
+#                         if i.type_=="name":
+#                             name_text=i.text
+
+#                     for i in button:
+#                         if i.type_=="password":
+#                             password_text=i.text
+                            
+
+#                     # if checks_if_user_exists(name_text,password_text):  
+#                     error_text= checks_input(name_text,password_text)  
+#                     print(error_text)
+#                     if len(error_text)>0:
+                       
+                    
+#                         for i in button:
+#                             if i.type_=="name":
+#                                 i.text=error_text
+#                                 # i.text=""
+
+#                         for i in button:
+#                             if i.type_=="password":
+#                                 i.text=error_text
+#                                 # i.text=""
+
+#                     else:
+#                         # adds_a_user(name_text,password_text)
+#                         screen_main("log in")
+                    
+#                 if self.type_=="back":
+#                     screen_main("start")
+
+#                 if self.text=="guest":
+#                     screen_main("guest")
+
+#                 if self.text=="enter":
+#                     self.game_activ=True
+
+#                 if self.text=="exit":
+#                     pygame.quit()
+#                     exit()
+
+                
+#     def SetText(self,NewText):
+#         self.text=NewText
+#         self.text_color=(0,0,0)
+ 
+
+    
+#     def update(self):
+#         self.drow()
+#         self.onclick()
+#         self.text_()
+#         self.hover()
+
+# class Background(pygame.sprite.Sprite):
+#     def __init__(self,pos,img):
+#         super().__init__()
+#         #self.background = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()  
+#         self.background = img
+#         self.pos=pos
+#         self.end=""
+        
+#         self.image=self.background
+#         self.rect=self.image.get_rect(topleft = (self.pos))
+        
     def onclick(self):
        
         mous_pos=pygame.mouse.get_pos()
         if self.rect.collidepoint(mous_pos):
-         if pygame.mouse.get_pressed()[0]==1 and self.click==False:
-
-            for i in button:
-                    if i.type_!=self.type_:
-                        
+            if pygame.mouse.get_pressed()[0]==1 and self.click==False:
+                for i in button:
+                    if i.type_!=self.type_:   
                         i.click=False    
-            self.click=True
-
-            if self.type_=="log in":
                 self.click=True
-                name_text=""
-                password_text=""
-                for i in button:
-                    if i.type_=="name":
-                        name_text=i.text
-                for i in button:
-                    if i.type_=="password":
-                        password_text=i.text
-
+                onclic_of_buttens(self)
                 
-                if checks_if_user_exists(name_text):
-                # if checks_if_user_exists(name_text,password_text):
-                    screen_main("log in")
 
-            if self.type_=="sing up":
-                self.click=True
-                name_text=""
-                password_text=""
-
-                for i in button:
-                    if i.type_=="name":
-                        name_text=i.text
-
-                for i in button:
-                    if i.type_=="password":
-                        password_text=i.text
-                        
-
-                # if checks_if_user_exists(name_text,password_text):    
-                if checks_if_user_exists(name_text):    
-                    for i in button:
-                        if i.type_=="name":
-                            i.text=""
-
-                    for i in button:
-                        if i.type_=="password":
-                            i.text=""
-
-
-                elif adds_a_user(name_text,password_text):
-                    screen_main("log in")
-                
-            if self.type_=="back":
-                screen_main("start")
-            if self.text=="guest":
-                screen_main("guest")
-            if self.text=="enter":
-                self.click=True
-                self.game_activ=True
-            if self.text=="exit":
-                self.click=True
-                pygame.quit()
-                exit()
-            # if self.type_=="name":
-            #     for i in button:
-            #         if i.type_!=self.type_:
-                        
-            #             i.click=False
-                            
-            #     self.click=True
-
-            # if self.type_=="password":
-            #     for i in button:
-            #         if i.type_!=self.type_:
-            #             i.click=False
-            #     self.click=True
-
-                #print(self.text)
                 
     def SetText(self,NewText):
         self.text=NewText
@@ -156,8 +198,6 @@ class Background(pygame.sprite.Sprite):
         
         self.image=self.background
         self.rect=self.image.get_rect(topleft = (self.pos))
-        
-
          
         
     def update(self):
@@ -905,14 +945,18 @@ class Enemy_tank(pygame.sprite.Sprite):
         self.time_to_move()
 
 class Coin(pygame.sprite.Sprite):
-    cont=0
+    # cont=0
     def __init__(self, pos):
         super().__init__()
         self.image = coin_img
         self.rect = self.image.get_rect(center = pos)
         self.gravity_x=1
         self.gravity_y=1
-        Coin.cont+=1
+        data.pull()
+        data.coins+=1
+        data.push()
+        print(data.coins)
+        # Coin.cont+=1
 
         
 
@@ -1039,6 +1083,58 @@ class Bounse(pygame.sprite.Sprite):
             self.image=self.heart
             self.rect = self.heart.get_rect(center = (self.x,self.y))
             
+def onclic_of_buttens(self_btn):
+    name_text=" "
+    password_text=" "
+    for i in button:
+        if i.type_=="name":
+            name_text=i.text
+    for i in button:
+        if i.type_=="password":
+            password_text=i.text
+    print("555555555555555",name_text,"5555555",password_text)
+
+    if self_btn.type_=="log in":
+        # error_text = checks_input(name_text,password_text)  
+        # print(error_text)
+        # if len(error_text)<=0:
+        if checks_if_user_exists(name_text,password_text):
+            global data
+            data.name=name_text
+            data.pull()
+            screen_main("log in")
+            return 0
+        else:
+            self_btn.text="user not find"
+            
+
+    if self_btn.type_=="sing up":
+        error_text= checks_input(name_text,password_text)  
+        print(error_text)
+        if len(error_text)==0:
+            screen_main("log in")
+            return 0
+        else:
+            self_btn.text=error_text
+           
+    if self_btn.type_=="back":
+        screen_main("start")
+        
+
+    if self_btn.text=="guest":
+        screen_main("guest")
+
+    if self_btn.text=="enter":
+        self_btn.game_activ=True
+
+    if self_btn.text=="exit":
+        pygame.quit()
+        exit()
+
+
+
+
+
 def screen_main(type_):
     
     coler=(255,0,0)
@@ -1414,7 +1510,6 @@ def exit_space_is_empty(self_):
             
         return False
     return True
-
 
 #groups
 background = pygame.sprite.Group()
