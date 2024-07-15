@@ -21,19 +21,29 @@ def adds_a_user(name, pas):
     # else:
     #     print(f"User {name} already exists.")
 
-# def checks_if_user_exists(name,password):
+def return_how_is_not_exists(name, password):
+    
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 1 
+        FROM PLAYERS 
+        WHERE PlayerName COLLATE Latin1_General_CI_AS = ? 
+        
+    """, (name))
+    result = cursor.fetchone()
+    if result is not None:
+        return (f"the password --{password}-- is not exists \n")
 
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT 1 FROM PLAYERS WHERE PlayerName COLLATE Latin1_General_CI_AS = ? ", (name))
-#     if cursor.fetchone():
-#         print(cursor.fetchone(),"test_____________")
-#         cursor.execute("SELECT 1 FROM PLAYERS WHERE PlayerPassword COLLATE Latin1_General_CI_AS = ? ", (password))
-#         if cursor.fetchone():
-#             print(cursor.fetchone(),"test_____________")
-#             return True
-
-#     return False
-
+    cursor.execute("""
+        SELECT 1 
+        FROM PLAYERS 
+        WHERE PlayerPassword COLLATE Latin1_General_CI_AS = ? 
+        
+    """, (password))
+    result = cursor.fetchone()
+    if result is not None:
+        return (f"the name --{name}-- is not exists \n")
+    return"One or more of the details is incorrect"
 
 def checks_if_user_exists(name, password):
     cursor = conn.cursor()
@@ -49,13 +59,20 @@ def checks_if_user_exists(name, password):
 
 def checks_input(input_name,input_password):
     error_m=""
-    if input_name=="name" or input_password == "password" or input_name==" " or input_password==" ":
-        error_m+="One or more of the details is missing"
+    if input_name=="name" or input_password == "password" or input_name=="" or input_password=="":
+        error_m+="One or more of the details is missing ; \n"
+
+    if len(input_name)>0 and (len(input_password)==0 or input_password=="password"):
+        error_m+="Please enter a password ; \n"
+
+    if len(input_password)>0 and (len(input_name)==0 or input_name=="name"):
+        error_m+="Please enter a username ; \n"  
     # print(ord(input_name[0]),"____________________test",ord(input_name[1]))
     if checks_if_user_exists(input_name,input_password):
-        error_m+=(f"The user --{input_name}-- is already exists ;") 
-    if input_name==" ":
-        error_m+=(f"The name --{input_name}-- is not possible ;     ")
+        error_m+=(f"The user --{input_name}-- is already exists ; \n") 
+
+    error_m+=return_how_is_not_exists(input_name,input_password)
+    
 
     # for i in range(len(input_password)):
     #     print(input_password[i])

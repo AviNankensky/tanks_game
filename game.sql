@@ -46,3 +46,13 @@ SELECT 1 FROM GameStats WHERE PlayerName COLLATE Latin1_General_CI_AS = ? "
 
 
 SELECT 1 FROM PLAYERS WHERE PlayerName COLLATE Latin1_General_CI_AS = ' avi'
+
+SELECT 1 FROM PLAYERS WHERE PlayerPassword COLLATE Latin1_General_CI_AS = '123'
+
+
+SELECT 1 
+FROM PLAYERS 
+WHERE PlayerName COLLATE Latin1_General_CI_AS = ' aa'
+AND PlayerPassword COLLATE Latin1_General_CI_AS = ' 22'
+
+

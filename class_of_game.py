@@ -23,7 +23,7 @@ def create_global_data(name_text):
     data.pull()
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, color, text ,text_color=(0,0,0) ,font_size=24 ):
+    def __init__(self, x, y, width, height, color, text ,text_color=(0,0,0) ,font_size=24 ,image_path=None ):
         super().__init__()
         self.text_color=text_color
         self.image = pygame.Surface([width, height],pygame.SRCALPHA)
@@ -40,19 +40,36 @@ class Button(pygame.sprite.Sprite):
         # self.font = pygame.font.Font("font/arial.ttf", font_size)
         self.font=pygame.font.Font(None, font_size)
         self.click=False
-
+        self.image_path = image_path
+        if image_path:
+            self.background_image = pygame.image.load(image_path).convert_alpha()
+            self.background_image = pygame.transform.scale(self.background_image, (width, height))
+        else:
+            self.background_image = None
 
 
 
     def drow(self):
-        pygame.draw.rect(self.image,self.color,pygame.Rect(0,0,self.width,self.height),border_radius=20)
-        pygame.draw.rect(self.image,(105, 105, 105),pygame.Rect(0,0,self.width,self.height),4,border_radius=20)
+        if self.background_image:
+            self.image.blit(self.background_image, (0, 0))
+        else:
+            pygame.draw.rect(self.image,self.color,pygame.Rect(0,0,self.width,self.height),border_radius=20)
+            pygame.draw.rect(self.image,(105, 105, 105),pygame.Rect(0,0,self.width,self.height),4,border_radius=20)
         
 
+    # def text_(self):
+    #     text_surface = self.font.render(self.text, True, self.text_color)
+    #     text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
+    #     self.image.blit(text_surface, text_rect)
+
     def text_(self):
-        text_surface = self.font.render(self.text, True, self.text_color)
-        text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
-        self.image.blit(text_surface, text_rect)
+        lines = self.text.split('\n')
+        y_offset = self.height // 2 
+        for line in lines:
+            text_surface = self.font.render(line, True, self.text_color)
+            text_rect = text_surface.get_rect(center=(self.width // 2, y_offset))
+            self.image.blit(text_surface, text_rect)
+            y_offset += self.font.get_height()
 
     def hover(self):
        
@@ -61,107 +78,7 @@ class Button(pygame.sprite.Sprite):
             pygame.draw.rect(self.image,(255,255,255),pygame.Rect(0,0,self.width,self.height),10,border_radius=20)
 
 
-#     def onclick(self):
-       
-#         mous_pos=pygame.mouse.get_pos()
-#         if self.rect.collidepoint(mous_pos):
-#             if pygame.mouse.get_pressed()[0]==1 and self.click==False:
 
-#                 for i in button:
-#                         if i.type_!=self.type_:
-                            
-#                             i.click=False    
-#                 self.click=True
-
-#                 if self.type_=="log in":
-#                     # self.click=True
-#                     name_text=" "
-#                     password_text=" "
-#                     for i in button:
-#                         if i.type_=="name":
-#                             name_text=i.text
-#                     for i in button:
-#                         if i.type_=="password":
-#                             password_text=i.text
-
-#                     if name_text != " ":
-#                         # if checks_if_user_exists(name_text):
-#                         if checks_if_user_exists(name_text,password_text):                   
-#                             global data
-#                             data.name=name_text
-#                             data.pull()
-#                             screen_main("log in")
-
-#                 if self.type_=="sing up":
-#                     # self.click=True
-#                     name_text=" "
-#                     password_text=" "
-
-#                     for i in button:
-#                         if i.type_=="name":
-#                             name_text=i.text
-
-#                     for i in button:
-#                         if i.type_=="password":
-#                             password_text=i.text
-                            
-
-#                     # if checks_if_user_exists(name_text,password_text):  
-#                     error_text= checks_input(name_text,password_text)  
-#                     print(error_text)
-#                     if len(error_text)>0:
-                       
-                    
-#                         for i in button:
-#                             if i.type_=="name":
-#                                 i.text=error_text
-#                                 # i.text=""
-
-#                         for i in button:
-#                             if i.type_=="password":
-#                                 i.text=error_text
-#                                 # i.text=""
-
-#                     else:
-#                         # adds_a_user(name_text,password_text)
-#                         screen_main("log in")
-                    
-#                 if self.type_=="back":
-#                     screen_main("start")
-
-#                 if self.text=="guest":
-#                     screen_main("guest")
-
-#                 if self.text=="enter":
-#                     self.game_activ=True
-
-#                 if self.text=="exit":
-#                     pygame.quit()
-#                     exit()
-
-                
-#     def SetText(self,NewText):
-#         self.text=NewText
-#         self.text_color=(0,0,0)
- 
-
-    
-#     def update(self):
-#         self.drow()
-#         self.onclick()
-#         self.text_()
-#         self.hover()
-
-# class Background(pygame.sprite.Sprite):
-#     def __init__(self,pos,img):
-#         super().__init__()
-#         #self.background = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()  
-#         self.background = img
-#         self.pos=pos
-#         self.end=""
-        
-#         self.image=self.background
-#         self.rect=self.image.get_rect(topleft = (self.pos))
         
     def onclick(self):
        
@@ -1084,39 +1001,46 @@ class Bounse(pygame.sprite.Sprite):
             self.rect = self.heart.get_rect(center = (self.x,self.y))
             
 def onclic_of_buttens(self_btn):
-    name_text=" "
-    password_text=" "
+    name_text=""
+    password_text=""
+    # error_text="Enter a username and password to log in or sing up"
+    error_text=""
+
+    #מושך את הסיסמה והשם משתמש מהכפתורים
     for i in button:
         if i.type_=="name":
             name_text=i.text
     for i in button:
         if i.type_=="password":
             password_text=i.text
-    print("555555555555555",name_text,"5555555",password_text)
 
     if self_btn.type_=="log in":
-        # error_text = checks_input(name_text,password_text)  
-        # print(error_text)
-        # if len(error_text)<=0:
+        error_text += checks_input(name_text,password_text)  
+        # if len(error_text)==0:
         if checks_if_user_exists(name_text,password_text):
             global data
             data.name=name_text
             data.pull()
-            screen_main("log in")
-            return 0
-        else:
-            self_btn.text="user not find"
+            screen_main("sing up")
+        
+
             
 
     if self_btn.type_=="sing up":
-        error_text= checks_input(name_text,password_text)  
-        print(error_text)
+        error_text+= checks_input(name_text,password_text)  
         if len(error_text)==0:
-            screen_main("log in")
-            return 0
-        else:
-            self_btn.text=error_text
-           
+            screen_main("sing up")
+
+    #מזריק את הטקסט שגיאה למסך שגיאה
+    for i in button:
+        if i.type_=="Enter a username and password to log in or sing up":
+            i.text=error_text
+                    
+    
+    # if self_btn.type_=="shop":
+    #     screen_main("shop")
+
+
     if self_btn.type_=="back":
         screen_main("start")
         
@@ -1140,6 +1064,12 @@ def screen_main(type_):
     coler=(255,0,0)
     # coler=(205,92,92)
     button.empty()
+    if type_=="shop":
+        button.add(Button(length/2+150, 100, 100, 100, coler, "", (0,0,0), 24, 'graphics/weapons/tnt.jpg'))
+        button.add(Button(length/2+150, 200, 100, 100, coler, "", (0,0,0), 24, 'graphics/weapons/ice_wall.png'))
+        button.add(Button(length/2+150, 300, 100, 100, coler, "", (0,0,0), 24, 'graphics/heart.png'))
+        button.add(Button(length/2-100,400,200,50,(255,0,0),"back"))
+
     if type_=="start":
         button.add(Button(length/2-150,100,300,50,coler,"name",(211,211,211)))
         button.add(Button(length/2-150,200,300,50,coler,"password",(211,211,211)))
@@ -1147,16 +1077,14 @@ def screen_main(type_):
         button.add(Button(length/2-150,300,100,100,coler,"log in"))
         button.add(Button(length/2,300,100,100,coler,"sing up"))
         button.add(Button(length/2+150,300,100,100,coler,"guest"))
+        button.add(Button(length/2-250,450,500,150,(0,0,0),"Enter a username and password to log in or sing up",(255,255,255)))
         
     if type_=="sing up" or type_=="log in" or type_=="guest":
         button.add(Button(length/2-100,100,200,50,(255,0,0),"enter"))
         button.add(Button(length/2-100,200,200,50,(255,0,0),"exit"))
         button.add(Button(length/2-100,300,200,50,(255,0,0),"shop"))
-
         button.add(Button(length/2-100,400,200,50,(255,0,0),"back"))
-    # if type_=="loogin screen":
-    #     button.add(Button(300,200,200,50,(255,0,0),"new name"))
-    #     button.add(Button(300,250,200,50,(255,0,0),"new password"))
+
     if type_=="guest screen":
         print("test_______________________________")
         return True
