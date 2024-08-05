@@ -9,8 +9,17 @@ SELECT 1 FROM PLAYERS WHERE PlayerName COLLATE Latin1_General_CI_AS = 'avi' AND 
 SELECT *
 FROM PLAYERS AS P INNER JOIN GameStats AS G
 	ON P.PlayerName=G.PlayerName;
+
+
 	
 
+SELECT 1 
+    FROM PLAYERS 
+    WHERE  PlayerPassword COLLATE Latin1_General_CI_AS = '444'
+
+SELECT * 
+FROM PLAYERS AS P 
+WHERE P.PlayerPassword='1'
 --CREATE TABLE PLAYERS(
 -- PlayerName VARCHAR(50),
 -- PlayerPassword INT 
@@ -26,6 +35,8 @@ FROM PLAYERS AS P INNER JOIN GameStats AS G
 --    Coins INT NOT NULL,
 --    FOREIGN KEY (PlayerName) REFERENCES Players(PlayerName)
 --);
+DELETE FROM PLAYERS
+WHERE PlayerName = ' avi';
 
 INSERT  INTO PLAYERS (PlayerName,PlayerPassword) VALUES('avi',65);
 
