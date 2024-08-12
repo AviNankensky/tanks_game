@@ -958,6 +958,24 @@ class Bounse(pygame.sprite.Sprite):
             self.image = self.heart
             self.rect = self.heart.get_rect(center=(self.x, self.y))
 
+class BetweenStages(pygame.sprite.Sprite):
+
+    
+    def __init__(self):
+        super().__init__()
+        
+        self.img = pygame.image.load('graphics/background_end.png')
+
+        self.img = pygame.transform.scale(self.img, (length, width))
+
+        self.rect = self.img.get_rect(topleft=(length, 0))
+        
+        self.image = self.img
+
+    def update(self):
+        camera(self)
+
+
 
 def onclic_of_buttens(self_btn):
     name_text = ""
@@ -1422,6 +1440,8 @@ def exit_space_is_empty(self_):
 
 
 # groups
+betweenStages = pygame.sprite.Group()
+
 background = pygame.sprite.Group()
 coin = pygame.sprite.Group()
 button = pygame.sprite.Group()

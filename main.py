@@ -51,6 +51,7 @@ def flag_hit_from_ball():
 
 def reset_game(level_of_game):
 
+    heart.empty()
     background.empty()
     ice_wall.empty()
     trees_wall.empty()
@@ -77,11 +78,16 @@ def reset_game(level_of_game):
     tank.sprite.key = False
 
     # Coin.cont=0
-    num_of_heart = 3
+
+    num_of_heart = data.heart
     pos_of_heart = [(375, width-40), (425, width-40), (475, width-40)]
-    while num_of_heart > 0:
-        heart.add(Heart(pos_of_heart[num_of_heart-1]))
-        num_of_heart -= 1
+
+    for i in range(data.heart):
+        heart.add(Heart(pos_of_heart[i]))
+
+    # while num_of_heart > 0:
+    #     heart.add(Heart(pos_of_heart[num_of_heart-1]))
+    #     num_of_heart -= 1
 # else:
     door.add(Door(length*2-40, 300))
 
@@ -190,6 +196,23 @@ def display_inpo_under_line():
     heart.draw(screen)
 
 
+def move_tank_smoothly(tank_sprite, distance):
+    if len(betweenStages) == 0:
+        betweenStages.add(BetweenStages())
+    move_speed = 20  # מהירות התזוזה בכל פריים
+    for _ in range(distance // move_speed):
+        tank_sprite.activ = True
+        tank_sprite.direction = "right"
+
+        # tank_sprite.rect.x -= 1
+        # tank_sprite.rect.x += move_speed
+        # tank.draw(screen)
+
+        # all_sprites.draw(screen)  # צייר את כל הספרייטים
+        # pygame.display.flip()  # עדכן את המסך
+        # pygame.time.delay(30)  # השהייה קצרה בין כל תזוזה
+
+
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
@@ -199,6 +222,7 @@ test_font = pygame.font.Font('font/OpenSans-Regular-webfont.woff', 50)
 star_x = 775
 
 imags()
+
 
 Background_start = pygame.transform.scale(pygame.image.load(
     'graphics/Background_AI.jpeg'), (length, width)).convert_alpha()
@@ -238,6 +262,7 @@ exit_rect = exit_image.get_rect(center=(length/2, width/2-50))
 
 
 # timers
+betweenLevelsOfGame = 0
 
 enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(enemy_timer, 3000)
@@ -391,11 +416,22 @@ while True:
 
     if game_active:
 
-        if door_is_open():
-            data.level += 1
-            data.push()
-            print(data.level, "00000000000000000000000000000000000000000000000000000")
-            reset_game(data.level)
+        if door_is_open() or betweenLevelsOfGame != 0:
+            betweenLevelsOfGame += 1
+            if betweenLevelsOfGame == length:
+                betweenLevelsOfGame = 0
+
+            tank_sprite = tank.sprite
+            move_tank_smoothly(tank_sprite, length)
+
+        # if door_is_open() :
+
+        #     data.level += 1
+        #     data.push()
+        #     print(data.level, "00000000000000000000000000000000000000000000000000000")
+        #     reset_game(data.level)
+        betweenStages.draw(screen)
+        betweenStages.update()
 
         bounses.draw(screen)
 
