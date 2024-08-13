@@ -5,8 +5,9 @@ from asyncio.windows_events import NULL
 from random import choice
 from typing import Any
 import pygame
-
 from Database_connection import Information, conn, data
+
+
 # from main import reset_game, imags
 global data
 # data = None
@@ -108,11 +109,13 @@ class Background(pygame.sprite.Sprite):
     def __init__(self, pos, img):
         super().__init__()
         # self.background = pygame.transform.scale(pygame.image.load('graphics/background.jpg'),(length,width)).convert_alpha()
-        self.background = img
+        self.img = img
+        self.img = pygame.transform.scale(self.img, (length, width))
+
         self.pos = pos
         self.end = ""
 
-        self.image = self.background
+        self.image = self.img
         self.rect = self.image.get_rect(topleft=(self.pos))
 
     def update(self):
@@ -248,11 +251,11 @@ class Tank(pygame.sprite.Sprite):
             for hert in heart:
                 hert.kill()
                 break
-            if data.heart==0:
-                data.coins=0
-                data.level=1
+            if data.heart == 0:
+                data.coins = 0
+                data.level = 1
                 data.push()
-                #פה משהו שמשנה את המסך למסך של הפסד
+                # פה משהו שמשנה את המסך למסך של הפסד
 
         else:
             self.pos_rest = False
@@ -453,7 +456,7 @@ class Wood_wall(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
 
-        self.wood = wood
+        self.wood = woodImg
         self.image = self.wood
         self.rect = self.image.get_rect(center=(x, y))
 
@@ -958,24 +961,6 @@ class Bounse(pygame.sprite.Sprite):
             self.image = self.heart
             self.rect = self.heart.get_rect(center=(self.x, self.y))
 
-class BetweenStages(pygame.sprite.Sprite):
-
-    
-    def __init__(self):
-        super().__init__()
-        
-        self.img = pygame.image.load('graphics/background_end.png')
-
-        self.img = pygame.transform.scale(self.img, (length, width))
-
-        self.rect = self.img.get_rect(topleft=(length, 0))
-        
-        self.image = self.img
-
-    def update(self):
-        camera(self)
-
-
 
 def onclic_of_buttens(self_btn):
     name_text = ""
@@ -1134,6 +1119,9 @@ def stone_blpock(tank_self):
     if pygame.sprite.spritecollide(tank_self, door, False) and tank_self.key == False:
         return True
 
+    if pygame.sprite.spritecollide(tank_self, mysteriousBox, False):
+        return True
+
     if pygame.sprite.spritecollide(tank_self, ice_wall, False):
         return True
     if pygame.sprite.spritecollide(tank_self, tnt, False):
@@ -1156,8 +1144,8 @@ def stone_blpock(tank_self):
 
     if pygame.sprite.spritecollide(tank_self, enemy_boss1, False):
         return True
-    else:
-        return False
+
+    return False
 
 
 def bollet_hit_player():
@@ -1185,7 +1173,6 @@ def bollet_hit_player():
                 return True
 
     return False
-
 
 
 def wood_wall_bomber():
@@ -1334,14 +1321,16 @@ def imags():
     ball = pygame.image.load('graphics/weapons/ball.png').convert_alpha()
 
     # wall
-    global wood, strong_wall, trees_wall, stone_wall_image
+    global woodImg, strong_wall, trees_wall, stone_wall_image, mysterious_box_img
     stone_wall_image = pygame.image.load(
         'graphics/wall/Stone_wall.png').convert_alpha()
-    wood = pygame.image.load('graphics/wall/wood.png')
+    woodImg = pygame.image.load('graphics/wall/wood.png')
     strong_wall = pygame.image.load(
         'graphics/wall/strong_wall.jpg').convert_alpha()
     trees_wall = pygame.image.load('graphics/wall/trees.png').convert_alpha()
 
+    mysterious_box_img = pygame.image.load(
+        'graphics/wall/mysterious_box.png').convert_alpha()
     # weapons
     global fire_img1_left, fire_img2_left, fire_img3_left, fire_img4_left, fire_img5_left, fire_img1_up, fire_img2_up,  fire_img3_up,  fire_img4_up,  fire_img5_up, fire_img1_down, fire_img2_down,  fire_img3_down,  fire_img4_down,  fire_img5_down, fire_img1_right, fire_img2_right,  fire_img3_right,  fire_img4_right,  fire_img5_right
 
@@ -1424,6 +1413,7 @@ def imags():
     enemy_frozen_down = pygame.transform.rotate(frozen_tank_image, 180)
     enemy_frozen_right = pygame.transform.rotate(frozen_tank_image, 270)
 
+
 def door_is_open():
     if tank.sprite.key:
         if pygame.sprite.spritecollide(tank.sprite, door, False):
@@ -1440,9 +1430,12 @@ def exit_space_is_empty(self_):
 
 
 # groups
-betweenStages = pygame.sprite.Group()
-
 background = pygame.sprite.Group()
+mysteriousBox = pygame.sprite.Group()
+
+
+# betweenStages = pygame.sprite.Group()
+
 coin = pygame.sprite.Group()
 button = pygame.sprite.Group()
 bounses = pygame.sprite.Group()

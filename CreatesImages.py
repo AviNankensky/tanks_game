@@ -2,7 +2,10 @@ import pygame
 
 pygame.init()
 
+
 def create_summary_image(kills, coins, level):
+
+
     width, height = 400, 300
     surface = pygame.Surface((width, height))
     surface.fill((255, 255, 255))  # רקע לבן
@@ -23,6 +26,7 @@ def create_summary_image(kills, coins, level):
         surface.blit(text_surface, (20, 20 + i * 50))
 
     return surface
+
 
 # דוגמה לשימוש
 level = 1

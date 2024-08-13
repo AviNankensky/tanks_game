@@ -1,4 +1,6 @@
 use TanksGame
+
+
 INSERT INTO GameStats ( PlayerName,Score,Coins) VALUES ('ava',2,1567);
 
 SELECT 1 
