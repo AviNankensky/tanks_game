@@ -1,6 +1,6 @@
 import pygame
 
-pygame.init()
+# pygame.init()
 
 
 def create_summary_image(kills, coins, level):

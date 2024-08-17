@@ -8,7 +8,8 @@ from class_of_game import *
 from Database_connection import *
 from Database_connection import Information, conn, data
 from BetweenStages import *
-
+from store import item , Item ,simpleButton
+from menu import screen_main , button 
 win = Tk()
 win.geometry("650x250")
 width = win.winfo_screenheight()
@@ -93,7 +94,7 @@ def reset_game(level_of_game):
 
     # add....
     pixels()
-    button.add(Button(300, 300, 200, 50, (255, 0, 0), "entnr"))
+    # button.add(Button(300, 300, 200, 50, (255, 0, 0), "entnr"))
     # enemy in...
 
     # if level_of_game == 1:
@@ -110,15 +111,15 @@ def reset_game(level_of_game):
     #         'graphics/background/background_level_3.webp'), (length, width)).convert_alpha()
 
     if level_of_game == 1:
-        background__ = pygame.image.load('graphics/background/background_level_1.jpg').convert_alpha()
+        background__ = pygame.image.load('graphics/background/backgroun_d_level_1.jpg').convert_alpha()
             
 
     if level_of_game == 2:
         background__ = pygame.image.load(
             'graphics/background/background_level_2.webp').convert_alpha()
 
-    else:
-        #  level_of_game == 3:
+    
+    if level_of_game == 3:
         background__ = pygame.image.load(
             'graphics/background/background_level_3.webp').convert_alpha()
     # background
@@ -276,9 +277,9 @@ while True:
     if bollet_hit_enemy_tank():
         outcome_of_enemy_tanks += 1
 
-    op = tnt_exploded()
-    if op > 0:
-        outcome_of_enemy_tanks += op
+    num_of_enemy_has_killed = tnt_exploded()
+    if num_of_enemy_has_killed > 0:
+        outcome_of_enemy_tanks += num_of_enemy_has_killed
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -353,19 +354,19 @@ while True:
 
             for i in button:
                 if i.click:
+                    if i.type_ == "password" or i.type_ == "name":
+                        if event.type == pygame.KEYDOWN:
+                            if i.text == i.type_:
+                                i.text = ""
+                            input_text = i.text
+                            if event.key == pygame.K_BACKSPACE and len(input_text) != 0:
+                                input_text = input_text[:-1]
+                            else:
+                                input_text += event.unicode
+                            i.SetText(input_text)
 
-                    if event.type == pygame.KEYDOWN:
-                        if i.text == i.type_:
-                            i.text = " "
-                        input_text = i.text
-                        if event.key == pygame.K_BACKSPACE and len(input_text) != 0:
-                            input_text = input_text[:-1]
-                        else:
-                            input_text += event.unicode
-                        i.SetText(input_text)
-
-                        i.update()
-                        break
+                            i.update()
+                            break
 
             for i in button:
 
@@ -411,6 +412,8 @@ while True:
 
     if game_active:
 
+
+
         if betweenLevels and betweenLevelsOfGame == 0:
 
             if len(mysteriousBox)==0:
@@ -418,7 +421,7 @@ while True:
                 data.level += 1
                 data.push()
                 reset_game(data.level)
-                
+
         if door_is_open() and betweenLevelsOfGame==0:
             background.add(Background((length, 0), background_img))
             printNumWhitMysteriousBox(data.level, length+300, 200)
@@ -435,17 +438,13 @@ while True:
                 tank.sprite.key = False
 
 
-        # if door_is_open() :
 
-        #     data.level += 1
-        #     data.push()
-        #     print(data.level, "00000000000000000000000000000000000000000000000000000")
-        #     reset_game(data.level)
-        betweenStages.draw(screen)
-        betweenStages.update()
+        # betweenStages.draw(screen)
+        # betweenStages.update()
 
         background.draw(screen)
         background.update()
+
 
         mysteriousBox.draw(screen)
         mysteriousBox.update()
@@ -548,6 +547,16 @@ while True:
             screen.blit(Background_start, (0, 0))
             button.draw(screen)
             button.update()
+            
+            item.draw(screen)
+            item.update()
+            # item.update(pygame.event.get())
+
+            # simpleButton.add(item.increase_button )
+            # simpleButton.add(item.decrease_button)
+            # simpleButton.draw(screen)
+            # simpleButton.update(pygame.event.get())
+            
             # if :
             #     game_active = True
             # screen.blit(play_image,play_rect)

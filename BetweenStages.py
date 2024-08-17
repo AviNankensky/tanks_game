@@ -1,23 +1,10 @@
 import pygame
-from class_of_game import camera, length, width, mysteriousBox, balls, coin, Coin, ball_animation, Ball_animation, stone_wall, Stone_wall, key, Background, background
+from random import choice
+from class_of_game import camera, length, width, mysteriousBox, balls, coin, Coin, ball_animation, Ball_animation, stone_wall, Stone_wall, key, Background, background ,enemy_tank ,Enemy_tank
 from Database_connection import data
 
 
-class BetweenStages(pygame.sprite.Sprite):
 
-    def __init__(self):
-        super().__init__()
-
-        self.img = pygame.image.load('graphics/background7.jpg')
-
-        self.img = pygame.transform.scale(self.img, (length, width))
-
-        self.rect = self.img.get_rect(topleft=(length, 0))
-
-        self.image = self.img
-
-    def update(self):
-        camera(self)
 
 
 class MysteriousBox(pygame.sprite.Sprite):
@@ -39,9 +26,17 @@ class MysteriousBox(pygame.sprite.Sprite):
 
                     ball_animation.add(Ball_animation(
                         (ball.rect.x, ball.rect.y)))
-                    coin.add(Coin((self.rect.x, self.rect.y)))
                     ball.kill()
+                    self.addRandomli()
                     self.kill()
+
+    def addRandomli(self):
+        
+        random_choice=choice(["coin","enemy","coin"])
+        if random_choice=="coin":
+            coin.add(Coin((self.rect.x, self.rect.y)))
+        else:
+            enemy_tank.add(Enemy_tank((self.rect.x, self.rect.y)))
 
     def update(self):
         camera(self)
@@ -86,19 +81,11 @@ def printNumWhitMysteriousBox(num, x, y):
             mysteriousBox.add(MysteriousBox(startPointX+i, startPointY+250))
 
 
-# global cont
-# cont = 0
 
 
 def changing_screen_smoothly(tank_sprite):
     key.empty()
 
-    # global cont
-    # if cont == 0:
-
-    #     cont += 1
-    #     background.add(Background((length, 0), background_img))
-    #     printNumWhitMysteriousBox(data.level, length+300, 200)
 
     tank_sprite.activ = True
     tank_sprite.direction = "right"
@@ -111,4 +98,4 @@ background_img = pygame.image.load(
     'graphics/wall/wood.png').convert_alpha()
 
 
-betweenStages = pygame.sprite.Group()
+
