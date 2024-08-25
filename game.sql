@@ -14,9 +14,16 @@ SELECT * FROM GameStats
 
 SELECT 1 FROM PLAYERS WHERE PlayerName COLLATE Latin1_General_CI_AS = 'avi' AND PlayerPassword = '123' 
 
+
+
 SELECT *
-FROM PLAYERS AS P INNER JOIN GameStats AS G
-	ON P.PlayerName=G.PlayerName;
+FROM PLAYERS AS P
+INNER JOIN GameStats AS G ON P.PlayerName = G.PlayerName
+--INNER JOIN PlayerProducts AS PP ON P.PlayerName = PP.PlayerName;
+
+SELECT * FROM PlayerProducts WHERE PlayerName = 'aviavi'
+	
+
 
 
 SELECT COLUMN_NAME, DATA_TYPE
@@ -99,6 +106,16 @@ CREATE TABLE GameStats (
     GameDate DATE NOT NULL,
     Score INT NOT NULL,
     Coins INT NOT NULL,
+    FOREIGN KEY (PlayerName) REFERENCES PLAYERS(PlayerName)
+);
+
+
+CREATE TABLE PlayerProducts (
+    PlayerName VARCHAR(50) COLLATE Latin1_General_CI_AS NOT NULL,
+    Ice INT DEFAULT 20 CHECK (Ice >= 0),
+    Tnt INT DEFAULT 7 CHECK (Tnt >= 0),
+    Heart INT DEFAULT 3 CHECK (Heart > 0),
+    PRIMARY KEY (PlayerName),
     FOREIGN KEY (PlayerName) REFERENCES PLAYERS(PlayerName)
 );
 

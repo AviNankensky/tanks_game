@@ -17,8 +17,12 @@ def adds_a_user(name, pas):
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO PLAYERS (PlayerName, PlayerPassword) VALUES (?, ?);", (name, pas))
+        
         cursor.execute(
             "INSERT INTO GameStats (PlayerName, Score, Coins ,Heart ,Level) VALUES (?, ?, ? , ? ,?);", (name, 0, 0, 3, 1))
+
+        cursor.execute(
+            "INSERT INTO PlayerProducts (PlayerName) VALUES (?);", (name))
 
         conn.commit()
     #     print(f"User {name} added successfully.")
@@ -96,6 +100,26 @@ def checks_input(input_name, input_password, type_):
     #     if ord(input_password[i])>ord("9") or ord(input_password[i])<ord("0"):
     #         error_m+=(f"The password--{input_name}-- is not valid ;     ")
     return error_m
+class ShopDate():
+    def __init__(self,conn):
+        self.conn = conn
+        self.ice = 0 
+        self.tnt = 0
+        self.hart = 0
+        self.playerName = 'aviavi'
+        
+
+    def update(self):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT * FROM PlayerProducts WHERE PlayerName = ?',(self.playerName))
+        for colon in cursor:
+            self.ice = colon[1]
+            self.tnt = colon[2]
+            self.hart = colon[3]
+        self.conn.commit()
+        print(f"name =>{self.playerName} tnt => {self.tnt} ice =>{self.ice}")
+        
+
 
 
 class Information():
@@ -118,6 +142,7 @@ class Information():
 
         # if cursor.fetchone():
         if checks_if_user_exists(self.name, self.password):
+            shopDate.update()
             self.data_connect = True
             cursor = self.conn.cursor()
             cursor.execute(
@@ -147,6 +172,8 @@ class Information():
 global data
 
 data = Information(conn)
+shopDate = ShopDate(conn)
+shopDate.update()
 data.pull()
 # print(data.coins)
 # data.pull()
