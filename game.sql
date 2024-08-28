@@ -1,5 +1,6 @@
 use TanksGame
 
+select * from player_weapons
 
 INSERT INTO GameStats ( PlayerName,Score,Coins) VALUES ('ava',2,1567);
 
@@ -19,7 +20,7 @@ SELECT 1 FROM PLAYERS WHERE PlayerName COLLATE Latin1_General_CI_AS = 'avi' AND 
 SELECT *
 FROM PLAYERS AS P
 INNER JOIN GameStats AS G ON P.PlayerName = G.PlayerName
---INNER JOIN PlayerProducts AS PP ON P.PlayerName = PP.PlayerName;
+--INNER JOIN PlaKUyerProducts AS PP ON P.PlayerName = PP.PlayerName;
 
 SELECT * FROM PlayerProducts WHERE PlayerName = 'aviavi'
 	

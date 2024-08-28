@@ -1,12 +1,13 @@
+from store import Item, item
+from Database_connection import Information, conn, data
 from Database_connection import *
 from re import I
 from tkinter import *
 from asyncio.windows_events import NULL
-from random import choice
+from random import choice , randint
 from typing import Any
 import pygame
-from Database_connection import Information, conn, data
-from store import Item , item
+pygame.mixer.init()
 
 
 global data
@@ -17,87 +18,6 @@ win = Tk()
 win.geometry("650x250")
 width = win.winfo_screenheight()
 length = win.winfo_screenwidth()
-
-# def create_global_data(name_text,password):
-#     global data
-#     data = Information(conn, name_text,password)
-#     data.pull()
-
-
-# class Button(pygame.sprite.Sprite):
-#     def __init__(self, x, y, width, height, color, text, text_color=(0, 0, 0), font_size=24, image_path=None):
-#         super().__init__()
-#         self.text_color = text_color
-#         self.image = pygame.Surface([width, height], pygame.SRCALPHA)
-#         self.rect = self.image.get_rect(center=(x, y))
-#         # self.image.fill(color)
-#         self.rect.x = x
-#         self.rect.y = y
-#         self.width = width
-#         self.height = height
-#         self.color = color
-#         self.text = text
-#         self.game_activ = False
-#         self.type_ = text
-#         # self.font = pygame.font.Font("font/arial.ttf", font_size)
-#         self.font = pygame.font.Font(None, font_size)
-#         self.click = False
-#         self.image_path = image_path
-#         if image_path:
-#             self.background_image = pygame.image.load(
-#                 image_path).convert_alpha()
-#             self.background_image = pygame.transform.scale(
-#                 self.background_image, (width, height))
-#         else:
-#             self.background_image = None
-
-#     def drow(self):
-#         if self.background_image:
-#             self.image.blit(self.background_image, (0, 0))
-#         else:
-#             pygame.draw.rect(self.image, self.color, pygame.Rect(
-#                 0, 0, self.width, self.height), border_radius=20)
-#             pygame.draw.rect(self.image, (105, 105, 105), pygame.Rect(
-#                 0, 0, self.width, self.height), 4, border_radius=20)
-
-
-#     def text_(self):
-#         lines = self.text.split('\n')
-#         y_offset = self.height // 2
-#         for line in lines:
-#             text_surface = self.font.render(line, True, self.text_color)
-#             text_rect = text_surface.get_rect(
-#                 center=(self.width // 2, y_offset))
-#             self.image.blit(text_surface, text_rect)
-#             y_offset += self.font.get_height()
-
-#     def hover(self):
-
-#         mous_pos = pygame.mouse.get_pos()
-#         if self.rect.collidepoint(mous_pos):
-#             pygame.draw.rect(self.image, (255, 255, 255), pygame.Rect(
-#                 0, 0, self.width, self.height), 10, border_radius=20)
-
-#     def onclick(self):
-
-#         mous_pos = pygame.mouse.get_pos()
-#         if self.rect.collidepoint(mous_pos):
-#             if pygame.mouse.get_pressed()[0] == 1 and self.click == False:
-#                 for i in button:
-#                     if i.type_ != self.type_:
-#                         i.click = False
-#                 self.click = True
-#                 onclic_of_buttens(self)
-
-#     def SetText(self, NewText):
-#         self.text = NewText
-#         self.text_color = (0, 0, 0)
-
-#     def update(self):
-#         self.drow()
-#         self.onclick()
-#         self.text_()
-#         self.hover()
 
 
 class Background(pygame.sprite.Sprite):
@@ -140,6 +60,11 @@ class Tank(pygame.sprite.Sprite):
 
         self.tank_speed = 1
         self.life_bar_width = 200
+        self.sound = tank_sounds["tank1"]
+
+    def tankSound(self):
+        self.sound = tank_sounds[f"tank{randint(1, 15)}"]
+        self.sound.play()
 
     def life_bar(self):
         pygame.draw.rect(screen, (255, 0, 0), (500, width-50, 200, 20))
@@ -151,6 +76,7 @@ class Tank(pygame.sprite.Sprite):
         self.keys = pygame.key.get_pressed()
         if stone_blpock(self):
             self.activ = False
+
             if self.direction == "left":
                 self.rect.x += 1
                 Tank.cont_movment += 1
@@ -175,6 +101,7 @@ class Tank(pygame.sprite.Sprite):
             self.type_ = " "
 
             if self.keys[pygame.K_LEFT]:
+                self.tankSound()
                 self.direction = "left"
                 self.activ = True
                 self.image = pygame.transform.rotate(self.tank_image, 90)
@@ -185,6 +112,7 @@ class Tank(pygame.sprite.Sprite):
                     Tank.cont_movment += 1
 
             elif self.keys[pygame.K_RIGHT]:
+                self.tankSound()
                 self.direction = "right"
                 self.activ = True
                 self.image = pygame.transform.rotate(self.tank_image, 270)
@@ -195,6 +123,7 @@ class Tank(pygame.sprite.Sprite):
                     self.activ = False
 
             elif self.keys[pygame.K_UP]:
+                self.tankSound()
                 self.direction = "up"
                 self.activ = True
                 self.image = pygame.transform.rotate(self.tank_image, 0)
@@ -204,6 +133,7 @@ class Tank(pygame.sprite.Sprite):
                     self.rect.y = 0
 
             elif self.keys[pygame.K_DOWN]:
+                self.tankSound()
                 self.direction = "down"
                 self.activ = True
                 self.image = pygame.transform.rotate(self.tank_image, 180)
@@ -234,9 +164,11 @@ class Tank(pygame.sprite.Sprite):
                 ball.kill()
                 self.resistance -= 1
                 self.life_bar_width -= 40
+                player_is_hit.play()
 
         if self.resistance == 0:
-
+            losing_sound.play()
+            pygame.time.wait(1000)
             self.resistance = 5
             self.rect.x = 75
             self.rect.y = 150
@@ -252,6 +184,7 @@ class Tank(pygame.sprite.Sprite):
                 data.level = 1
                 data.heart = 3
                 data.push()
+
                 # פה משהו שמשנה את המסך למסך של הפסד
 
         else:
@@ -332,6 +265,7 @@ class Ball(pygame.sprite.Sprite):
     def destroy(self):
         if stone_wall_block_ball(self):
             ball_animation.add(Ball_animation((self.rect.x, self.rect.y)))
+            SoundOfShellExploding.play()
             self.kill()
         if self.rect.x > length+50 or self.rect.x < -50 or self.rect.y > width-50 or self.rect.y < 0:
             self.kill()
@@ -835,6 +769,8 @@ class Coin(pygame.sprite.Sprite):
         data.pull()
         data.coins += 1
         data.push()
+        self.sound = coin_audio
+        self.sound.play()
         # Coin.cont+=1
 
     def movment(self):
@@ -1190,6 +1126,7 @@ def wood_wall_bomber():
 
         for wood in box_collide:
             wood.kill()
+            SoundOfShellExploding.play()
             ball_animation.add(Ball_animation((ball.rect.x, ball.rect.y)))
             ball.kill()
 
@@ -1199,6 +1136,7 @@ def shield_stone_wall_block_balls():
         ston_shat = pygame.sprite.spritecollide(ball, shield_ston, False)
 
         for ston in ston_shat:
+            SoundOfShellExploding.play()
             ston.resistance -= 1
             if ston.get_self_resistance() == 0:
                 ston.kill()
@@ -1245,6 +1183,7 @@ def bollet_hit_enemy_tank():
                 ball, enemy_tank, False)
 
             for enemy in enemy_tank_kill:
+                SoundOfShellExploding.play()
                 ball_animation.add(Ball_animation((ball.rect.x, ball.rect.y)))
                 ball.kill()
                 if (enemy.get_resistance() == 0):
@@ -1262,8 +1201,8 @@ def stone_wall_block_ball(self_ball):
         return True
     if pygame.sprite.spritecollide(self_ball, ice_wall, False):
         return True
-    else:
-        return False
+    
+    return False
 
 
 def tnt_exploded():
@@ -1429,6 +1368,22 @@ def exit_space_is_empty(self_):
     return True
 
 
+def audio():
+    global coin_audio, SoundOfShellExploding ,tank_sounds ,tank_backpack ,losing_sound ,player_is_hit
+    coin_audio = pygame.mixer.Sound('audio/coin_sound.wav')
+    SoundOfShellExploding = pygame.mixer.Sound('audio/SoundOfShellExploding.wav')
+    tank_backpack = pygame.mixer.Sound('audio/tank_backpack.mp3')
+    losing_sound = pygame.mixer.Sound('audio/losing_sound.mp3')
+    player_is_hit = pygame.mixer.Sound('audio/player_is_hit.wav')
+
+
+tank_sounds = {}
+
+for i in range(1, 16):
+    tank_sounds[f'tank{i}'] = pygame.mixer.Sound(f'audio/tank/ ({i}).mp3')
+    tank_sounds[f'tank{i}'].set_volume(0.5)
+    
+audio()
 # groups
 background = pygame.sprite.Group()
 mysteriousBox = pygame.sprite.Group()

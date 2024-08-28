@@ -82,9 +82,12 @@ def reset_game(level_of_game):
 
     num_of_heart = data.heart
     pos_of_heart = [(375, width-40), (425, width-40), (475, width-40)]
-
-    for i in range(data.heart):
-        heart.add(Heart(pos_of_heart[i]))
+    if num_of_heart > 3:
+        for i in range(3):
+            heart.add(Heart(pos_of_heart[i]))
+    else:
+        for i in range(data.heart):
+            heart.add(Heart(pos_of_heart[i]))
 
     # while num_of_heart > 0:
     #     heart.add(Heart(pos_of_heart[num_of_heart-1]))
@@ -289,6 +292,9 @@ while True:
             # # data.push()
             screen_2 = False
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_x:
+                    screen_2=True
+                    game_active=False
                 if event.key == pygame.K_1:
                     weapon_type = weapon_list[0]
                     weapon_index = -1
@@ -314,6 +320,7 @@ while True:
                     if weapon_type == "ball":
                         balls.add(Ball(tank.sprite.rect.center,
                                   tank.sprite.direction, "player_ball"))
+                        # tank_backpack.play()
 
                     if weapon_type == 'ice':
 
@@ -373,6 +380,7 @@ while True:
                 if i.game_activ:
                     reset_game(data.level)
                     game_active = True
+                    i.game_activ = False
 
             # if button_type=="screen 2":
             #     button_type="play"

@@ -1,66 +1,5 @@
 import pygame
-
-
-# class Item_(pygame.sprite.Sprite):
-#     def __init__(self, pos, image_path, name, price):
-#         super().__init__()
-#         # Create a transparent surface with a defined size
-#         self.image = pygame.Surface([200, 300], pygame.SRCALPHA)
-#         self.rect = self.image.get_rect(topleft=pos)
-
-#         # Load and scale the product image
-#         self.product_image = pygame.image.load(image_path).convert_alpha()
-#         self.product_image = pygame.transform.scale(
-#             self.product_image, (180, 180))
-
-#         # Font for the text
-#         self.font = pygame.font.Font(None, 24)
-
-#         # Set the name and price
-#         self.name = name
-#         self.price = price
-#         self.quantity = 1 
-
-#         # Draw the initial appearance of the item
-#         self.draw()
-
-#     def draw(self):
-#         simpleButton.add(SimpleButton((self.rect.x+300,self.rect.y),'+'))
-#         # Draw the background rectangle
-#         pygame.draw.rect(self.image, (240, 240, 240),
-#                          pygame.Rect(0, 0, 200, 300), border_radius=15)
-
-#         # Draw the product image
-#         self.image.blit(self.product_image, (10, 10))
-
-#         # Render the name and price text
-#         name_text = self.font.render(self.name, True, (0, 0, 0))
-#         price_text = self.font.render(f"Price: {self.price}$", True, (0, 0, 0))
-
-#         # Position the text below the image
-#         self.image.blit(name_text, (10, 200))
-#         self.image.blit(price_text, (10, 240))
-
-#     def update(self):
-#         pass  # No need
-
-# class SimpleButton_(pygame.sprite.Sprite):
-#     def __init__(self, pos, text):
-#         super().__init__()
-#         self.image = pygame.Surface([100, 50], pygame.SRCALPHA)
-#         self.rect = self.image.get_rect(topleft=pos)
-#         self.text = text
-#         self.onclick = False
-#     def drow(self):
-#         pygame.draw.rect(self.image, (240, 240, 240),pygame.Rect(0, 0, 200, 300), border_radius=15)
-                    
-
-
-#         self.image.blit(self.image, (10, 10))
-
-#         name_text = self.font.render(self.text, True, (0, 0, 0))
-
-
+from Database_connection import data
 
 
 class Item(pygame.sprite.Sprite):
@@ -127,11 +66,31 @@ class Item(pygame.sprite.Sprite):
     def increase_quantity(self):
         self.quantity += 1
         self.draw()
+        self.updateTehSErver()
 
     def decrease_quantity(self):
         if self.quantity > 1:
             self.quantity -= 1
             self.draw()
+            self.updateTehSErver()
+
+    def updateTehSErver(self):
+        if self.name == "heart":
+            if data.coins >29 :
+                data.heart+=1
+                data.coins-=30
+        elif self.name == "ice":
+            if data.coins > 2:
+                data.shopDate.ice+=1
+                data.coins-=3
+        elif self.name == "tnt":
+            if data.coins > 9:
+                data.shopDate.tnt+=1
+                data.coins-=10
+
+        print(f"data stor name{data.shopDate.playerName}")
+        data.shopDate.push()
+        data.push()
 
 
 
@@ -178,6 +137,7 @@ class SimpleButton(pygame.sprite.Sprite):
         if pygame.Rect(button_pos, self.rect.size).collidepoint(mous_pos):
             if pygame.mouse.get_pressed()[0] == 1:
                 self.callback()
+                print("onclic__________________test")
                 pygame.time.wait(300)
 
     def update(self):
@@ -189,6 +149,7 @@ class SimpleButton(pygame.sprite.Sprite):
         #     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         #         if self.rect.collidepoint(event.pos):
         #             self.callback()
+
 
 item = pygame.sprite.Group()
 simpleButton = pygame.sprite.Group()

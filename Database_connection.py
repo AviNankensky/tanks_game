@@ -101,15 +101,17 @@ def checks_input(input_name, input_password, type_):
     #         error_m+=(f"The password--{input_name}-- is not valid ;     ")
     return error_m
 class ShopDate():
-    def __init__(self,conn):
+    def __init__(self, name, conn):
         self.conn = conn
         self.ice = 0 
         self.tnt = 0
-        self.hart = 0
-        self.playerName = 'aviavi'
+        self.hart = 1
+        self.playerName = name
         
 
-    def update(self):
+    def pull(self ,newName=""):
+        if newName != "":
+            self.playerName = newName
         cursor = self.conn.cursor()
         cursor.execute('SELECT * FROM PlayerProducts WHERE PlayerName = ?',(self.playerName))
         for colon in cursor:
@@ -117,8 +119,19 @@ class ShopDate():
             self.tnt = colon[2]
             self.hart = colon[3]
         self.conn.commit()
+        self.push()
         print(f"name =>{self.playerName} tnt => {self.tnt} ice =>{self.ice}")
         
+    def push(self):
+        
+        cursor = self.conn.cursor()
+        print("push data store",self.playerName,self.hart)
+        cursor.execute('UPDATE PlayerProducts SET Ice = ?, Tnt = ?, Heart = ? WHERE PlayerName = ?; ',(self.ice,self.tnt,self.hart,self.playerName))
+
+
+
+        self.conn.commit()
+
 
 
 
@@ -132,17 +145,16 @@ class Information():
         self.heart = heart
         self.level = level
         self.data_connect = False
-        if len(self.name) > 0:
-            self.pull()
+        self.shopDate = ShopDate("",self.conn)
+
 
     def pull(self):
-        # if checks_if_user_exists(self.name," "):
         cursor = self.conn.cursor()
-        # cursor.execute("SELECT 1 FROM PLAYERS WHERE PlayerName COLLATE Latin1_General_CI_AS = ? ", (self.name))
-
-        # if cursor.fetchone():
         if checks_if_user_exists(self.name, self.password):
-            shopDate.update()
+            if self.shopDate.playerName =="":
+                self.shopDate.pull(self.name)
+            else:
+                self.shopDate.pull()
             self.data_connect = True
             cursor = self.conn.cursor()
             cursor.execute(
@@ -172,8 +184,8 @@ class Information():
 global data
 
 data = Information(conn)
-shopDate = ShopDate(conn)
-shopDate.update()
+# shopDate = ShopDate(conn)
+# shopDate.update()
 data.pull()
 # print(data.coins)
 # data.pull()
