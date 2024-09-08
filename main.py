@@ -79,40 +79,15 @@ def reset_game(level_of_game):
     tank.sprite.key = False
 
     # Coin.cont=0
-
-    num_of_heart = data.heart
-    pos_of_heart = [(375, width-40), (425, width-40), (475, width-40)]
-    if num_of_heart > 3:
-        for i in range(3):
-            heart.add(Heart(pos_of_heart[i]))
-    else:
-        for i in range(data.heart):
-            heart.add(Heart(pos_of_heart[i]))
-
-    # while num_of_heart > 0:
-    #     heart.add(Heart(pos_of_heart[num_of_heart-1]))
-    #     num_of_heart -= 1
-# else:
+    display_inpo_under_line()
+  
     door.add(Door(length*2-40, 300))
 
     # add....
     pixels()
-    # button.add(Button(300, 300, 200, 50, (255, 0, 0), "entnr"))
-    # enemy in...
+  
 
-    # if level_of_game == 1:
-    #     background__ = pygame.transform.scale(pygame.image.load(
-    #         'graphics/background/background_level_1.jpg'), (length, width)).convert_alpha()
-
-    # if level_of_game == 2:
-    #     background__ = pygame.transform.scale(pygame.image.load(
-    #         'graphics/background/background_level_2.webp'), (length, width)).convert_alpha()
-
-    # else:
-    #     #  level_of_game == 3:
-    #     background__ = pygame.transform.scale(pygame.image.load(
-    #         'graphics/background/background_level_3.webp'), (length, width)).convert_alpha()
-
+    background__ = pygame.image.load('graphics/background/backgroun_d_level_1.jpg').convert_alpha()
     if level_of_game == 1:
         background__ = pygame.image.load('graphics/background/backgroun_d_level_1.jpg').convert_alpha()
             
@@ -148,7 +123,7 @@ def pixels():
             else:
                 if type_pixel == "bounses":
                     bounses.add(Bounse("heart", r, c))
-                    print("test")
+
 
                 if type_pixel == "empty":
                     NULL
@@ -168,16 +143,16 @@ def pixels():
 def display_score():
 
     current_time = int(pygame.time.get_ticks() / 1000) - start_time
-    score_surf = test_font.render(f'Score: {current_time}', False, (0, 0, 0))
-    score_rect = score_surf.get_rect(center=(length-150, width-40))
+    score_surf = pygame.font.Font(None, 60).render(f'Score: {current_time}', False, (0, 0, 0))
+    score_rect = score_surf.get_rect(center=(length-120, 25))
     screen.blit(score_surf, score_rect)
     return current_time
 
 
 def display_coin_cont():
     coin_surf = test_font.render(
-        f'{data.coins} :', False, (0, 0, 0))  # Coin.cont #data.coins
-    coin_rect = coin_surf.get_rect(center=(950, width-40))
+        f' {data.coins}', False, (0, 0, 0))  
+    coin_rect = coin_surf.get_rect(center=(950, width-50))
     screen.blit(coin_surf, coin_rect)
 
 
@@ -203,13 +178,37 @@ def whell_of_elemnt_in_teh_game(level):
 
 
 def display_inpo_under_line():
+    ball_text = test_font.render('-', False, (0, 0, 0))
+    tnt_text = test_font.render(f'{data.shopDate.tnt}', False, (0, 0, 0))
+    ice_text = test_font.render(f'{data.shopDate.ice}', False, (0, 0, 0))
+    harte_text = test_font.render(f'{data.heart}', False, (0, 0, 0))
+    coin_num = test_font.render( f' {data.coins}', False, (0, 0, 0)) 
+        
+    coin_num = test_font.render( f' {data.coins}', False, (0, 0, 0)) 
+    
+    #display under_line
     screen.blit(background_line, (0, width-70))
-    screen.blit(coin_img_, (870, width-55))
-    display_coin_cont()
+
+    screen.blit(coin_img_, (length-170, width-60))
+    screen.blit(coin_num, (length-140,width-75))
+
+    # displayHearts()
+
+
     screen.blit(ball_image, ball_rect)
-    screen.blit(tnt_image, tnt_rect)
+    screen.blit(ball_text, (100, width-75))
+
     screen.blit(ice_image, ice_rect)
-    heart.draw(screen)
+    screen.blit(ice_text, (180, width-75))
+
+    screen.blit(tnt_image, tnt_rect)
+    screen.blit(tnt_text, (300, width-75))
+
+    
+    screen.blit(harte_image, harte_rect)
+    screen.blit(harte_text, (500, width-75))
+
+    # heart.draw(screen)
 
 
 pygame.init()
@@ -217,7 +216,7 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 clock = pygame.time.Clock()
 pygame.display.set_caption('Tanks')
-test_font = pygame.font.Font('font/OpenSans-Regular-webfont.woff', 50)
+test_font = pygame.font.Font('font/rexlia rg.otf', 50)
 star_x = 775
 
 imags()
@@ -244,11 +243,15 @@ ball_rect = ball_image.get_rect(center=(75, width-40))
 
 ice_image = pygame.transform.scale(pygame.image.load(
     'graphics/weapons/ice_wall.png'), (40, 40)).convert_alpha()
-ice_rect = ice_image.get_rect(center=(175, width-40))
+ice_rect = ice_image.get_rect(center=(150, width-40))
 
 tnt_image = pygame.transform.scale(pygame.image.load(
     'graphics/weapons/tnt.jpg'), (40, 40)).convert_alpha()
 tnt_rect = tnt_image.get_rect(center=(275, width-40))
+
+harte_image = pygame.transform.scale(pygame.image.load(
+    'graphics/heart.png'), (40, 40)).convert_alpha()
+harte_rect = harte_image.get_rect(center=(455, width-40))
 
 
 button_type = "play"
@@ -274,7 +277,7 @@ name_text = ""
 screen_main("start")
 
 while True:
-    # print(game_active)
+
 
     whell_of_elemnt_in_teh_game(data.level)
     if bollet_hit_enemy_tank():
@@ -324,38 +327,46 @@ while True:
 
                     if weapon_type == 'ice':
 
-                        if tank.sprite.direction == "right":
-                            ice_wall.add(
-                                Ice_wall(tank.sprite.rect.x+50, tank.sprite.rect.y, "right"))
+                        if data.shopDate.ice != 0:
+                            
+                            data.shopDate.ice-=1
+                            data.shopDate.push()
 
-                        if tank.sprite.direction == "left":
-                            ice_wall.add(
-                                Ice_wall(tank.sprite.rect.x-50, tank.sprite.rect.y, "left"))
+                            if tank.sprite.direction == "right":
+                                ice_wall.add(
+                                    Ice_wall(tank.sprite.rect.x+50, tank.sprite.rect.y, "right"))
 
-                        if tank.sprite.direction == "down":
-                            ice_wall.add(
-                                Ice_wall(tank.sprite.rect.x, tank.sprite.rect.y+50, "down"))
+                            if tank.sprite.direction == "left":
+                                ice_wall.add(
+                                    Ice_wall(tank.sprite.rect.x-50, tank.sprite.rect.y, "left"))
 
-                        if tank.sprite.direction == "up":
-                            ice_wall.add(
-                                Ice_wall(tank.sprite.rect.x, tank.sprite.rect.y-50, "up"))
+                            if tank.sprite.direction == "down":
+                                ice_wall.add(
+                                    Ice_wall(tank.sprite.rect.x, tank.sprite.rect.y+50, "down"))
+
+                            if tank.sprite.direction == "up":
+                                ice_wall.add(
+                                    Ice_wall(tank.sprite.rect.x, tank.sprite.rect.y-50, "up"))
 
                     if weapon_type == "tnt":
-                        if tank.sprite.direction == "right":
-                            tnt.add(Tnt(tank.sprite.rect.x +
-                                    50, tank.sprite.rect.y))
+                        if data.shopDate.tnt != 0:
+                            data.shopDate.tnt -=1
+                            data.shopDate.push()
+                            if tank.sprite.direction == "right":
+                                tnt.add(Tnt(tank.sprite.rect.x +
+                                        50, tank.sprite.rect.y))
 
-                        if tank.sprite.direction == "left":
-                            tnt.add(Tnt(tank.sprite.rect.x -
-                                    50, tank.sprite.rect.y))
+                            if tank.sprite.direction == "left":
+                                tnt.add(Tnt(tank.sprite.rect.x -
+                                        50, tank.sprite.rect.y))
 
-                        if tank.sprite.direction == "down":
-                            tnt.add(Tnt(tank.sprite.rect.x,
-                                    tank.sprite.rect.y+50))
+                            if tank.sprite.direction == "down":
+                                tnt.add(Tnt(tank.sprite.rect.x,
+                                        tank.sprite.rect.y+50))
 
-                        if tank.sprite.direction == "up":
-                            tnt.add(Tnt(tank.sprite.rect.x,
-                                    tank.sprite.rect.y-50))
+                            if tank.sprite.direction == "up":
+                                tnt.add(Tnt(tank.sprite.rect.x,
+                                        tank.sprite.rect.y-50))
 
         else:
 
@@ -382,41 +393,6 @@ while True:
                     game_active = True
                     i.game_activ = False
 
-            # if button_type=="screen 2":
-            #     button_type="play"
-            # start_time = int(pygame.time.get_ticks() / 1000)
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_DOWN:
-            #         #rect = pygame.draw.rect(screen,'black',exit_rect,40)
-            #         button_type="exit"
-            #         exit_image=pygame.image.load('graphics/buttons/exit_2.png').convert_alpha()
-            #         play_image=pygame.image.load('graphics/buttons/play_1.png').convert_alpha()
-
-            #     if event.key == pygame.K_UP:
-            #         button_type="play"
-
-            #         exit_image=pygame.image.load('graphics/buttons/exit_1.png').convert_alpha()
-            #         play_image=pygame.image.load('graphics/buttons/play_2.png').convert_alpha()
-
-            #     if score > 0  and screen_2== False:
-            #         button_type ="screen 2"
-
-            #     if  event.key == pygame.K_SPACE  :
-
-            #         if button_type =="screen 2":
-            #             screen_2 = True
-
-            #         if button_type=="play":
-
-            #             game_active=True
-
-            #             outcome_of_enemy_tanks=0
-            #             #num_enemy_tank=5
-            #             reset_game(1)
-
-            #         if button_type=="exit":
-            #             pygame.quit()
-            #             exit()
 
     if game_active:
 
@@ -445,10 +421,6 @@ while True:
                 betweenLevelsOfGame = 0
                 tank.sprite.key = False
 
-
-
-        # betweenStages.draw(screen)
-        # betweenStages.update()
 
         background.draw(screen)
         background.update()
@@ -501,24 +473,16 @@ while True:
 
         tnt_explosion.draw(screen)
         tnt_explosion.update()
-        x = tank.sprite.rect.x
-        # if door_is_open()==False:
-        #     tank.sprite.activ = False
-        #     while(tank.sprite.rect.x>x-50):
+        
+        coin.draw(screen)
+        coin.update()
 
-        #         tank.sprite.rect.x-=0.5
-        #     game_active=door_is_open()
-        # else:
-        #     tank.sprite.activ = True
-        # game_active=door_is_open() #flag_hit_from_ball()
+        screen.blit(pygame.font.Font(None, 60).render( "Press X to exit", False, (0, 0, 0)), (100,0))
 
-        screen.blit(background_line, (0, width-70))
-        screen.blit(coin_img_, (870, width-55))
+        display_inpo_under_line()
         tank.draw(screen)
         tank.update()
 
-        coin.draw(screen)
-        coin.update()
 
         key.draw(screen)
         key.update()
@@ -526,50 +490,30 @@ while True:
         screen.blit(ball_image, ball_rect)
         screen.blit(tnt_image, tnt_rect)
         screen.blit(ice_image, ice_rect)
+        screen.blit(harte_image,harte_rect)
         heart.draw(screen)
+
         score = display_score()
-        display_coin_cont()
         if weapon_type == 'ball':
             pygame.draw.rect(screen, (0, 0, 0), ball_rect, 4)
         if weapon_type == 'ice':
             pygame.draw.rect(screen, (0, 0, 0), ice_rect, 4)
         if weapon_type == 'tnt':
             pygame.draw.rect(screen, (0, 0, 0), tnt_rect, 4)
-        # screen.blit(Rect)
 
-        if not heart:
-            game_active = False
-
-        # screen.blit(sutfes_level,(0,0))
-        # game_active=door_is_open()
 
     else:
         level = 1
-        # background.empty()
-        # door.empty()
-        # key.empty()
-        # enemy_boss1.empty()
+
 
         if score == 0 or screen_2:
-            # print(data.data_connect,"uuuuuuuuuuuuuuuuuuuuuuuu")
             screen.blit(Background_start, (0, 0))
             button.draw(screen)
             button.update()
             
             item.draw(screen)
             item.update()
-            # item.update(pygame.event.get())
-
-            # simpleButton.add(item.increase_button )
-            # simpleButton.add(item.decrease_button)
-            # simpleButton.draw(screen)
-            # simpleButton.update(pygame.event.get())
             
-            # if :
-            #     game_active = True
-            # screen.blit(play_image,play_rect)
-
-            # screen.blit(exit_image,exit_rect)
         else:
             screen.fill((0, 0, 0))
             screen.blit(Background_end, (50, 20))

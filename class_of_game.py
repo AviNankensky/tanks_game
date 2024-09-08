@@ -4,10 +4,11 @@ from Database_connection import *
 from re import I
 from tkinter import *
 from asyncio.windows_events import NULL
-from random import choice , randint
+from random import choice, randint
 from typing import Any
 import pygame
 pygame.mixer.init()
+pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
 
 
 global data
@@ -67,9 +68,9 @@ class Tank(pygame.sprite.Sprite):
         self.sound.play()
 
     def life_bar(self):
-        pygame.draw.rect(screen, (255, 0, 0), (500, width-50, 200, 20))
+        pygame.draw.rect(screen, (255, 0, 0), (length/2, width-50, 200, 20))
         pygame.draw.rect(screen, (0, 128, 0, 50),
-                         (500, width-50, self.life_bar_width, 20))
+                         (length/2, width-50, self.life_bar_width, 20))
 
     def input(self):
 
@@ -168,7 +169,7 @@ class Tank(pygame.sprite.Sprite):
 
         if self.resistance == 0:
             losing_sound.play()
-            pygame.time.wait(1000)
+            # pygame.time.wait(1000)
             self.resistance = 5
             self.rect.x = 75
             self.rect.y = 150
@@ -176,13 +177,12 @@ class Tank(pygame.sprite.Sprite):
             self.pos_rest = True
             data.heart -= 1
             data.push()
-            for hert in heart:
-                hert.kill()
-                break
             if data.heart == 0:
                 data.coins = 0
                 data.level = 1
                 data.heart = 3
+                data.shopDate.tnt = 7
+                data.shopDate.ice = 20
                 data.push()
 
                 # פה משהו שמשנה את המסך למסך של הפסד
@@ -284,6 +284,7 @@ class Tnt_explosion(pygame.sprite.Sprite):
         self.image = self.explosion_image_list[0]
         self.rect = self.image.get_rect(center=(x+20, y))
         self.index = 0
+        TNT_sound.play()
 
     def animation(self):
         self.index += 0.2
@@ -644,26 +645,6 @@ class Enemy_tank(pygame.sprite.Sprite):
             self.move_time = 40
 
     def random_movw(self):
-        # if enmey_stonr_block(self):
-        #     if self.direction=="down":
-        #         while  enmey_stonr_block(self):
-        #             self.rect.y -=1
-        #         self.direction="up"
-
-        #     if self.direction=="up":
-        #         while enmey_stonr_block(self):
-        #             self.rect.y +=1
-        #         self.direction="down"
-
-        #     if self.direction=="right":
-        #         while enmey_stonr_block(self):
-        #             self.rect.x -=1
-        #         self.direction="left"
-
-        #     if self.direction=="left":
-        #         while enmey_stonr_block(self):
-        #             self.rect.x +=1
-        #         self.direction="right"
 
         if self.direction == "down":
 
@@ -674,10 +655,6 @@ class Enemy_tank(pygame.sprite.Sprite):
 
                 self.rect.y -= 1
 
-            # if self.rect.y>=width-110:
-            #     self.rect.y-=1
-            #     self.direction=choice(["right","left","up"])
-
         elif self.direction == "up":
 
             self.image = enemy_up
@@ -686,10 +663,6 @@ class Enemy_tank(pygame.sprite.Sprite):
                 self.direction = "down"
 
                 self.rect.y += 1
-
-            # if self.rect.y<=0:
-            #     self.rect.y+=1
-            #     self.direction=choice(["down","right","left"])
 
         elif self.direction == "right":
 
@@ -700,10 +673,6 @@ class Enemy_tank(pygame.sprite.Sprite):
 
                 self.rect.x -= 1
 
-            # if self.rect.x>=length-40:
-            #     self.rect.x-=1
-            #     self.direction=choice(["up","left","down"])
-
         elif self.direction == "left":
 
             self.image = enemy_left
@@ -712,11 +681,6 @@ class Enemy_tank(pygame.sprite.Sprite):
             if enmey_stonr_block(self):
                 self.direction = "right"
                 self.rect.x += 1
-
-            # if self.rect.x<=0:
-            #     self.rect.x+=1
-
-            #     self.direction=choice(["up","right","down"])
 
     def dostroy(self):
         bollet_hit_enemy_tank()
@@ -771,21 +735,17 @@ class Coin(pygame.sprite.Sprite):
         data.push()
         self.sound = coin_audio
         self.sound.play()
-        # Coin.cont+=1
 
     def movment(self):
         self.gravity_x += 1
 
-        if self.rect.x > 900:
-            self.rect.x -= self.gravity_x
-
-        if self.rect.x < 900:
+        if self.rect.x < length-200:
             self.rect.x += self.gravity_x
 
-        if self.rect.y < width-60:
+        if self.rect.y < width-100:
             self.rect.y += self.gravity_x
 
-        if self.rect.y > width-100 and self.rect.x < 950 and self.rect.x > 850:
+        if self.rect.y > width-110 and self.rect.x > length-210:
             self.kill()
 
     def update(self):
@@ -825,7 +785,7 @@ class Key(pygame.sprite.Sprite):
     def key_is_geting(self):
         if pygame.sprite.spritecollide(self, tank, False):
             tank.sprite.key = True
-            key.add(Key((800, width-40), False))
+            key.add(Key((length-200, width-40), False))
             self.kill()
 
     def update(self):
@@ -893,102 +853,6 @@ class Bounse(pygame.sprite.Sprite):
         if self.type == "heart":
             self.image = self.heart
             self.rect = self.heart.get_rect(center=(self.x, self.y))
-
-
-# def onclic_of_buttens(self_btn):
-#     name_text = ""
-#     password_text = ""
-#     # error_text="Enter a username and password to log in or sing up"
-#     error_text = ""
-
-#     # מושך את הסיסמה והשם משתמש מהכפתורים
-#     for i in button:
-#         if i.type_ == "name":
-#             name_text = i.text
-#         if i.type_ == "password":
-#             password_text = i.text
-
-#     if self_btn.type_ == "log in":
-#         error_text += checks_input(name_text, password_text, "log in")
-#         # if len(error_text)==0:
-#         if checks_if_user_exists(name_text, password_text):
-#             global data
-#             data.name = name_text
-#             data.password = password_text
-#             data.pull()
-#             screen_main("log in")
-
-#     if self_btn.type_ == "sing up":
-#         error_text += checks_input(name_text, password_text, "sing up")
-#         if error_text == "One or more of the details is incorrect ;" or len(error_text) == 0 or error_text == "The user ---- is already exists ;" or error_text == "the password ---- is not exists ;" or error_text == "One or more of the details is incorrect ;" or error_text == "the name ---- is not exists ;":
-
-#             error_text = "The user has successfully registered"
-#             adds_a_user(name_text, password_text)
-#             if len(error_text) == 0:
-#                 screen_main("sing up")
-
-#     # מזריק את הטקסט שגיאה למסך שגיאה
-#     for i in button:
-#         if i.type_ == "Enter a username and password to log in or sing up":
-#             i.text = error_text
-
-#     if self_btn.type_ == "shop":
-#         screen_main("shop")
-
-#     if self_btn.type_ == "back":
-#         screen_main("start")
-
-#     if self_btn.text == "guest":
-#         screen_main("guest")
-
-#     if self_btn.text == "enter":
-#         self_btn.game_activ = True
-
-#     if self_btn.text == "exit":
-#         pygame.quit()
-#         exit()
-
-
-# def screen_main(type_):
-
-#     coler = (255, 0, 0)
-#     # coler=(205,92,92)
-#     button.empty()
-#     if type_ == "shop":
-#         item.add(Item((400, 300) ,"graphics/weapons/tnt.jpg", "TNT", 50))
-
-#         button.add(Button(length/2-100, 200, 200, 50, (255, 0, 0), "exit"))
-#         # button.add(Button(length/2+150, 100, 100, 100, coler, "",
-#         #            (0, 0, 0), 24, 'graphics/weapons/tnt.jpg'))
-#         # button.add(Button(length/2+150, 200, 100, 100, coler, "",
-#         #            (0, 0, 0), 24, 'graphics/weapons/ice_wall.png'))
-#         # button.add(Button(length/2+150, 300, 100, 100, coler,
-#         #            "", (0, 0, 0), 24, 'graphics/heart.png'))
-#         # button.add(Button(length/2-100, 400, 200, 50, (255, 0, 0), "back"))
-
-#     if type_ == "start":
-#         button.add(Button(length/2-150, 100, 300, 50,
-#                    coler, "name", (211, 211, 211)))
-#         button.add(Button(length/2-150, 200, 300, 50,
-#                    coler, "password", (211, 211, 211)))
-
-#         button.add(Button(length/2-150, 300, 100, 100, coler, "log in"))
-#         button.add(Button(length/2, 300, 100, 100, coler, "sing up"))
-#         button.add(Button(length/2+150, 300, 100, 100, coler, "guest"))
-#         button.add(Button(length/2-250, 450, 500, 150, (0, 0, 0),
-#                    "Enter a username and password to log in or sing up", (255, 255, 255)))
-
-#     if type_ == "sing up" or type_ == "log in" or type_ == "guest":
-
-#         button.add(Button(length/2-100, 100, 200, 50, (255, 0, 0), "enter"))
-#         button.add(Button(length/2-100, 200, 200, 50, (255, 0, 0), "exit"))
-#         button.add(Button(length/2-100, 300, 200, 50, (255, 0, 0), "shop"))
-#         button.add(Button(length/2-100, 400, 200, 50, (255, 0, 0), "back"))
-
-#     if type_ == "guest screen":
-#         print("test_______________________________")
-#         return True
-#     return False
 
 
 def smart_move(self):
@@ -1201,7 +1065,7 @@ def stone_wall_block_ball(self_ball):
         return True
     if pygame.sprite.spritecollide(self_ball, ice_wall, False):
         return True
-    
+
     return False
 
 
@@ -1219,10 +1083,18 @@ def tnt_exploded():
         for explos in wood_explos:
             explos.kill()
 
+        shield_explos = pygame.sprite.spritecollide(
+            tnt_bom, shield_ston, False)
+        for shield in shield_explos:
+            shield.kill()
+
         enemy_explos = pygame.sprite.spritecollide(tnt_bom, enemy_tank, False)
 
         for enemy in enemy_explos:
             enemy.kill()
+            coin.add(Coin((enemy.rect.x, enemy.rect.y)))
+            coin.add(Coin((enemy.rect.x+10, enemy.rect.y)))
+            coin.add(Coin((enemy.rect.x+10, enemy.rect.y+10)))
 
         return len(enemy_explos)
 
@@ -1369,12 +1241,14 @@ def exit_space_is_empty(self_):
 
 
 def audio():
-    global coin_audio, SoundOfShellExploding ,tank_sounds ,tank_backpack ,losing_sound ,player_is_hit
+    global coin_audio, TNT_sound, SoundOfShellExploding, tank_sounds, tank_backpack, losing_sound, player_is_hit
     coin_audio = pygame.mixer.Sound('audio/coin_sound.wav')
-    SoundOfShellExploding = pygame.mixer.Sound('audio/SoundOfShellExploding.wav')
+    SoundOfShellExploding = pygame.mixer.Sound(
+        'audio/SoundOfShellExploding.wav')
     tank_backpack = pygame.mixer.Sound('audio/tank_backpack.mp3')
-    losing_sound = pygame.mixer.Sound('audio/losing_sound.mp3')
+    losing_sound = pygame.mixer.Sound('audio/losing_sound.wav')
     player_is_hit = pygame.mixer.Sound('audio/player_is_hit.wav')
+    TNT_sound = pygame.mixer.Sound('audio/TNT.mp3')
 
 
 tank_sounds = {}
@@ -1382,7 +1256,7 @@ tank_sounds = {}
 for i in range(1, 16):
     tank_sounds[f'tank{i}'] = pygame.mixer.Sound(f'audio/tank/ ({i}).mp3')
     tank_sounds[f'tank{i}'].set_volume(0.5)
-    
+
 audio()
 # groups
 background = pygame.sprite.Group()

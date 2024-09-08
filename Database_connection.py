@@ -17,7 +17,7 @@ def adds_a_user(name, pas):
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO PLAYERS (PlayerName, PlayerPassword) VALUES (?, ?);", (name, pas))
-        
+
         cursor.execute(
             "INSERT INTO GameStats (PlayerName, Score, Coins ,Heart ,Level) VALUES (?, ?, ? , ? ,?);", (name, 0, 0, 3, 1))
 
@@ -25,9 +25,7 @@ def adds_a_user(name, pas):
             "INSERT INTO PlayerProducts (PlayerName) VALUES (?);", (name))
 
         conn.commit()
-    #     print(f"User {name} added successfully.")
-    # else:
-    #     print(f"User {name} already exists.")
+
 
 
 def return_how_is_not_exists(name, password):
@@ -78,7 +76,7 @@ def checks_input(input_name, input_password, type_):
 
     if len(input_password) > 0 and (len(input_name) == 0 or input_name == "name"):
         error_m += "Please enter a username ; \n"
-    # print(ord(input_name[0]),"____________________test",ord(input_name[1]))
+
     if type_ == "log in":
         if checks_if_user_exists(input_name, input_password):
             error_m += (f"The user --{input_name}-- is already exists ; \n")
@@ -95,44 +93,39 @@ def checks_input(input_name, input_password, type_):
         if result is not None:
             error_m += (f"The user --{input_name}-- is already exists ; \n")
 
-    # for i in range(len(input_password)):
-    #     print(input_password[i])
-    #     if ord(input_password[i])>ord("9") or ord(input_password[i])<ord("0"):
-    #         error_m+=(f"The password--{input_name}-- is not valid ;     ")
+
     return error_m
+
+
 class ShopDate():
     def __init__(self, name, conn):
         self.conn = conn
-        self.ice = 0 
+        self.ice = 0
         self.tnt = 0
         self.hart = 1
         self.playerName = name
-        
 
-    def pull(self ,newName=""):
+    def pull(self, newName=""):
         if newName != "":
             self.playerName = newName
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM PlayerProducts WHERE PlayerName = ?',(self.playerName))
+        cursor.execute(
+            'SELECT * FROM PlayerProducts WHERE PlayerName = ?', (self.playerName))
         for colon in cursor:
             self.ice = colon[1]
             self.tnt = colon[2]
             self.hart = colon[3]
         self.conn.commit()
         self.push()
-        print(f"name =>{self.playerName} tnt => {self.tnt} ice =>{self.ice}")
-        
+
+
     def push(self):
-        
+
         cursor = self.conn.cursor()
-        print("push data store",self.playerName,self.hart)
-        cursor.execute('UPDATE PlayerProducts SET Ice = ?, Tnt = ?, Heart = ? WHERE PlayerName = ?; ',(self.ice,self.tnt,self.hart,self.playerName))
-
-
+        cursor.execute('UPDATE PlayerProducts SET Ice = ?, Tnt = ?, Heart = ? WHERE PlayerName = ?; ',
+                       (self.ice, self.tnt, self.hart, self.playerName))
 
         self.conn.commit()
-
-
 
 
 class Information():
@@ -145,13 +138,12 @@ class Information():
         self.heart = heart
         self.level = level
         self.data_connect = False
-        self.shopDate = ShopDate("",self.conn)
-
+        self.shopDate = ShopDate("", self.conn)
 
     def pull(self):
         cursor = self.conn.cursor()
         if checks_if_user_exists(self.name, self.password):
-            if self.shopDate.playerName =="":
+            if self.shopDate.playerName == "":
                 self.shopDate.pull(self.name)
             else:
                 self.shopDate.pull()
@@ -174,35 +166,15 @@ class Information():
         if cursor.fetchone():
             cursor = self.conn.cursor()
             cursor.execute("UPDATE GameStats SET Score = ?, Coins = ? ,Heart = ? ,Level = ? WHERE PlayerName = ?;",
-                           (self.score, self.coins, self.heart, self.level , self.name ))
+                           (self.score, self.coins, self.heart, self.level, self.name))
         # else:
         #     cursor.execute("INSERT INTO GameStats (PlayerName, Score, Coins) VALUES (?, ?, ?);", (self.name, self.score,self.coins))
         self.conn.commit()
+
     def toString_(self):
-        return "name",self.name,"password",self.password,"level",self.level,"coins",self.coins
+        return "name", self.name, "password", self.password, "level", self.level, "coins", self.coins
+
 
 global data
 
 data = Information(conn)
-# shopDate = ShopDate(conn)
-# shopDate.update()
-data.pull()
-# print(data.coins)
-# data.pull()
-# print(checks_if_user_exists(" meir","5b9"))
-
-# data = Information(conn)
-# data.pull()
-# data = Information(conn," meir" ,100,100)
-
-# print(a.name,a.coins)
-# a.update_data()
-
-
-# def read(conn):
-#     print("read")
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT * FROM PLAYERS AS P")
-#     for row in cursor:
-#         print(row)
-# read(conn)

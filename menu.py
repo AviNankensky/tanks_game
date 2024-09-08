@@ -1,7 +1,8 @@
 import pygame
-from class_of_game import  length , width
+from class_of_game import length, width
 from Database_connection import *
-from store import item , Item
+from store import item, Item
+
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, color, text,  text_color=(0, 0, 0), font_size=24):
@@ -26,7 +27,6 @@ class Button(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, (105, 105, 105), pygame.Rect(
             0, 0, self.width, self.height), 4, border_radius=20)
 
-
     def text_(self):
         lines = self.text.split('\n')
         y_offset = self.height // 2
@@ -39,12 +39,12 @@ class Button(pygame.sprite.Sprite):
 
     def hover(self):
         mous_pos = pygame.mouse.get_pos()
-        if  self.click==True:
+        if self.click == True:
             pygame.draw.rect(self.image, (20, 20, 184), pygame.Rect(
                 0, 0, self.width, self.height), 5, border_radius=20)
 
         elif self.rect.collidepoint(mous_pos):
-            
+
             pygame.draw.rect(self.image, (255, 255, 255), pygame.Rect(
                 0, 0, self.width, self.height), 5, border_radius=20)
 
@@ -54,15 +54,12 @@ class Button(pygame.sprite.Sprite):
         if self.rect.collidepoint(mous_pos):
             if pygame.mouse.get_pressed()[0] == 1 and self.click == False:
 
-               
-
                 for i in button:
                     if i.type_ != self.type_:
                         i.click = False
                 self.click = True
-                
+
                 onclic_of_buttens(self)
-                
 
     def SetText(self, NewText):
         self.text = NewText
@@ -73,7 +70,6 @@ class Button(pygame.sprite.Sprite):
         self.onclick()
         self.text_()
         self.hover()
-
 
 
 def onclic_of_buttens(self_btn):
@@ -99,7 +95,7 @@ def onclic_of_buttens(self_btn):
             data.pull()
             screen_main("log in")
         else:
-            error_text+="User not found"
+            error_text += "User not found"
 
     if self_btn.type_ == "sing up":
         error_text += checks_input(name_text, password_text, "sing up")
@@ -135,34 +131,29 @@ def onclic_of_buttens(self_btn):
         exit()
 
 
-
-
 def screen_main(type_):
 
     coler = (255, 0, 0)
-    
+
     button.empty()
     item.empty()
     if type_ == "shop":
 
         button.add(Button(length-60, 10, 50, 50, (255, 0, 0), "X"))
         button.add(Button(10, 10, 200, 50, (255, 0, 0), "back"))
-        
 
-        item.add(Item((250, 200) ,"graphics/weapons/tnt.jpg", "TNT", 10))
-        item.add(Item((500, 200) ,"graphics/heart.png", "heart", 30))
-        item.add(Item((750, 200) ,"graphics/weapons/ice_wall.png", "ice", 3))
-        button.add(Button(length/2+150, 500, 100, 100, coler, "buy"))
-
-
+        item.add(Item((250, 200), "graphics/weapons/tnt.jpg", "TNT", 10))
+        item.add(Item((500, 200), "graphics/heart.png", "heart", 30))
+        item.add(Item((750, 200), "graphics/weapons/ice_wall.png", "ice", 3))
 
     if type_ == "start":
         button.add(Button(length-60, 10, 50, 50, (255, 0, 0), "X"))
 
-        button.add(Button(length/2-150, 100, 400, 50,coler, "name", (211, 211, 211)))
-                   
-        button.add(Button(length/2-150, 200, 400, 50,coler, "password", (211, 211, 211)))
-                   
+        button.add(Button(length/2-150, 100, 400, 50,
+                   coler, "name", (211, 211, 211)))
+
+        button.add(Button(length/2-150, 200, 400, 50,
+                   coler, "password", (211, 211, 211)))
 
         button.add(Button(length/2-150, 300, 100, 100, coler, "log in"))
 
@@ -173,7 +164,14 @@ def screen_main(type_):
         button.add(Button(length/2-200, 500, 500, 150, (0, 0, 0),
                    "Enter a username and password to log in or sing up", (255, 255, 255)))
 
-    if type_ == "sing up" or type_ == "log in" or type_ == "guest":
+    if type_ == "guest":
+        global data
+        adds_a_user("guest", "0")
+        data.name = "guest"
+        data.password = "0"
+        data.pull()
+        screen_main("log in")
+    if type_ == "sing up" or type_ == "log in":
         button.add(Button(length-60, 10, 50, 50, (255, 0, 0), "X"))
         button.add(Button(10, 10, 200, 50, (255, 0, 0), "log out"))
 
@@ -182,8 +180,9 @@ def screen_main(type_):
         button.add(Button(length/2-50, 300, 200, 50, (255, 0, 0), "shop"))
 
     if type_ == "guest screen":
-        print("test_______________________________")
+
         return True
     return False
+
 
 button = pygame.sprite.Group()

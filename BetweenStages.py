@@ -1,10 +1,7 @@
 import pygame
 from random import choice
-from class_of_game import camera, length, width, mysteriousBox, balls, coin, Coin, ball_animation, Ball_animation, stone_wall, Stone_wall, key, Background, background ,enemy_tank ,Enemy_tank
+from class_of_game import camera, length, width, mysteriousBox, balls, coin, Coin, ball_animation, Ball_animation, stone_wall, Stone_wall, key, Background, background, enemy_tank, Enemy_tank
 from Database_connection import data
-
-
-
 
 
 class MysteriousBox(pygame.sprite.Sprite):
@@ -31,9 +28,9 @@ class MysteriousBox(pygame.sprite.Sprite):
                     self.kill()
 
     def addRandomli(self):
-        
-        random_choice=choice(["coin","enemy","coin"])
-        if random_choice=="coin":
+
+        random_choice = choice(["coin", "enemy", "coin"])
+        if random_choice == "coin":
             coin.add(Coin((self.rect.x, self.rect.y)))
         else:
             enemy_tank.add(Enemy_tank((self.rect.x, self.rect.y)))
@@ -81,11 +78,8 @@ def printNumWhitMysteriousBox(num, x, y):
             mysteriousBox.add(MysteriousBox(startPointX+i, startPointY+250))
 
 
-
-
 def changing_screen_smoothly(tank_sprite):
     key.empty()
-
 
     tank_sprite.activ = True
     tank_sprite.direction = "right"
@@ -96,6 +90,3 @@ mysterious_box_img = pygame.image.load(
     'graphics/wall/mysterious_box.png').convert_alpha()
 background_img = pygame.image.load(
     'graphics/wall/wood.png').convert_alpha()
-
-
-

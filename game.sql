@@ -3,6 +3,12 @@ use TanksGame
 select * from player_weapons
 
 INSERT INTO GameStats ( PlayerName,Score,Coins) VALUES ('ava',2,1567);
+INSERT INTO PlayerProducts ( PlayerName,Ice, Tnt,Heart) VALUES ('avi_',10,3,4);
+
+UPDATE PlayerProducts
+SET Ice = 10, Tnt = 3, Heart = 4
+WHERE PlayerName = 'avi_';
+
 
 SELECT 1 
 FROM PLAYERS 
@@ -22,8 +28,12 @@ FROM PLAYERS AS P
 INNER JOIN GameStats AS G ON P.PlayerName = G.PlayerName
 --INNER JOIN PlaKUyerProducts AS PP ON P.PlayerName = PP.PlayerName;
 
-SELECT * FROM PlayerProducts WHERE PlayerName = 'aviavi'
+SELECT * FROM GameStats WHERE PlayerName = 'avi_'
 	
+
+TRUNCATE TABLE GameStats;
+TRUNCATE TABLE PlayerProducts;
+DELETE FROM PLAYERS;
 
 
 
