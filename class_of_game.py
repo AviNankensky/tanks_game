@@ -478,20 +478,24 @@ class Boss1(pygame.sprite.Sprite):
                          self.rect.y+50, self.life_bar_width, 10))
 
     def dstroy(self):
-        collided_balls = pygame.sprite.spritecollide(self, balls, False)
-        # for  i in tnt_explosion:
-        #     tnt__ = pygame.sprite.spritecollide(self.tnt_explosion,False)
+        if pygame.sprite.spritecollide(self, tnt_explosion, False):
+                self.resistance -= 4
+                coin.add(Coin((self.rect.x, self.rect.y)))
+                coin.add(Coin((self.rect.x+10, self.rect.y+10)))
+                coin.add(Coin((self.rect.x+20, self.rect.y+20)))
+                self.life_bar_width -= 64
 
+        collided_balls = pygame.sprite.spritecollide(self, balls, False)
         for ball in collided_balls:
             if ball.type == "player_ball":
                 self.resistance -= 1
                 coin.add(Coin((self.rect.x, self.rect.y)))
                 self.life_bar_width -= 16
                 ball.kill()
-                if self.resistance == 0:
-                    if len(key) == 0:
-                        key.add(Key((self.rect.x, self.rect.y), True))
-                    self.kill()
+        if self.resistance <= 0:
+            if len(key) == 0:
+                key.add(Key((self.rect.x, self.rect.y), True))
+            self.kill()
 
     def time_to_move(self):
         self.move_time -= 1
@@ -797,7 +801,8 @@ class Key(pygame.sprite.Sprite):
 class Star(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
-        self.image = star_
+        self.image = pygame.Surface((50, 50))
+        self.image.set_alpha(0)
         self.rect = self.image.get_rect(center=pos)
 
         self.pos = pos

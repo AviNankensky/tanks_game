@@ -115,7 +115,7 @@ def pixels():
 
             if c == 0 or c > width-125 or r == 0 and c != 150 or r == 50 and c != 150 or r == 100 and c != 150 or r > length*2-150 and c != 300:
                 stone_wall.add(Stone_wall(r, c))
-            elif c == 150 and (r == 150 or r == 1000 or r == 1500):
+            elif c == 250 and (r == 250 or r == 1000 or r == 1500 or r == 2000):
                 star.add(Star((r, c)))
             elif r <= 150 and c <= 300 or r == 750 and c == 0 or c == 150 or (r == 0 and (c == 150 or c == 200 or c == 100) or r == 50 and (c == 100 or c == 150 or c == 200) or r > length*2-300 and c == 300):
                 NULL
@@ -202,7 +202,7 @@ def display_inpo_under_line():
     screen.blit(ice_text, (180, width-75))
 
     screen.blit(tnt_image, tnt_rect)
-    screen.blit(tnt_text, (300, width-75))
+    screen.blit(tnt_text, (310, width-75))
 
     
     screen.blit(harte_image, harte_rect)
@@ -247,7 +247,7 @@ ice_rect = ice_image.get_rect(center=(150, width-40))
 
 tnt_image = pygame.transform.scale(pygame.image.load(
     'graphics/weapons/tnt.jpg'), (40, 40)).convert_alpha()
-tnt_rect = tnt_image.get_rect(center=(275, width-40))
+tnt_rect = tnt_image.get_rect(center=(285, width-40))
 
 harte_image = pygame.transform.scale(pygame.image.load(
     'graphics/heart.png'), (40, 40)).convert_alpha()
@@ -409,6 +409,7 @@ while True:
         if door_is_open() and betweenLevelsOfGame==0:
             background.add(Background((length, 0), background_img))
             printNumWhitMysteriousBox(data.level, length+300, 200)
+
 
         if door_is_open() or betweenLevelsOfGame != 0:
             betweenLevels=True

@@ -41,6 +41,7 @@ class MysteriousBox(pygame.sprite.Sprite):
         self.destroy()
 
 
+
 def printNumWhitMysteriousBox(num, x, y):
 
     for r in range(length, length*2, 50):   # 800
@@ -76,6 +77,8 @@ def printNumWhitMysteriousBox(num, x, y):
         mysteriousBox.add(MysteriousBox(startPointX+0, startPointY+250))
         for i in range(0, 250, 50):
             mysteriousBox.add(MysteriousBox(startPointX+i, startPointY+250))
+
+
 
 
 def changing_screen_smoothly(tank_sprite):
