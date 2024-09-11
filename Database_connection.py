@@ -1,15 +1,13 @@
-
+import os
 import pyodbc
+import sqlite3
+import traceback
 
-
-global conn
-conn = pyodbc.connect(
-    "Driver={SQL Server};"
-    "Server=MY_COMPUTER_AVI\\SQLEXPRESS;"
-    "Database=TanksGame;"
-    "Trusted_Connection=yes;"
-)
-
+try:
+    
+    conn = sqlite3.connect('Databases/data.sqlite')
+except Exception as e:
+    log_error(f"Error occurred: {str(e)}")  
 
 def adds_a_user(name, pas):
 
@@ -28,37 +26,31 @@ def adds_a_user(name, pas):
 
 
 
-def return_how_is_not_exists(name, password):
-
+def check_user_credentials(name, password):
     cursor = conn.cursor()
+    
     cursor.execute("""
-        SELECT 1 
-        FROM PLAYERS 
-        WHERE PlayerName COLLATE Latin1_General_CI_AS = ? 
-        
-    """, (name))
+        SELECT PlayerPassword
+        FROM 'dbo.PLAYERS'
+        WHERE LOWER(PlayerName) = LOWER(?)
+    """, (name,))
     result = cursor.fetchone()
-    if result is not None:
-        return (f"the password --{password}-- is not exists \n")
-
-    cursor.execute("""
-        SELECT 1 
-        FROM PLAYERS 
-        WHERE PlayerPassword COLLATE Latin1_General_CI_AS = ? 
-        
-    """, (password))
-    result = cursor.fetchone()
-    if result is not None:
-        return (f"the name --{name}-- is not exists \n")
+    
+    if result is None:
+        return f"The username '{name}' does not exist.\n"
+    
+    stored_password = result[0]
+    if password != stored_password:
+        return f"The password for user '{name}' is incorrect.\n"
+    
     return "One or more of the details is incorrect ;\n"
-
 
 def checks_if_user_exists(name, password):
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT 1 
-        FROM PLAYERS 
-        WHERE PlayerName COLLATE Latin1_General_CI_AS = ? 
+        SELECT 1
+        FROM 'dbo.PLAYERS'
+        WHERE LOWER(PlayerName) = LOWER(?)
         AND PlayerPassword = ?
     """, (name, password))
 
@@ -80,19 +72,17 @@ def checks_input(input_name, input_password, type_):
     if type_ == "log in":
         if checks_if_user_exists(input_name, input_password):
             error_m += (f"The user --{input_name}-- is already exists ; \n")
-            error_m += return_how_is_not_exists(input_name, input_password)
-    if type_ == "sing up":
+            error_m += check_user_credentials(input_name, input_password)
+    if type_ == "sign up":
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT 1 
-            FROM PLAYERS 
-            WHERE PlayerName COLLATE Latin1_General_CI_AS = ? 
-            
-        """, (input_name))
+            SELECT 1
+            FROM PLAYERS
+            WHERE LOWER(PlayerName) = LOWER(?)
+        """, (input_name,))
         result = cursor.fetchone()
         if result is not None:
-            error_m += (f"The user --{input_name}-- is already exists ; \n")
-
+            error_m += f"The user '{input_name}' already exists;\n"
 
     return error_m
 
@@ -105,24 +95,25 @@ class ShopDate():
         self.hart = 1
         self.playerName = name
 
+
     def pull(self, newName=""):
         if newName != "":
             self.playerName = newName
         cursor = self.conn.cursor()
         cursor.execute(
-            'SELECT * FROM PlayerProducts WHERE PlayerName = ?', (self.playerName))
-        for colon in cursor:
-            self.ice = colon[1]
-            self.tnt = colon[2]
-            self.hart = colon[3]
+            "SELECT * FROM 'dbo.PlayerProducts' WHERE PlayerName = ?", (self.playerName,))
+        row = cursor.fetchone()
+        if row:
+            self.ice = int(row[1])
+            self.tnt = int(row[2])
+            self.hart = int(row[3])
         self.conn.commit()
         self.push()
-
 
     def push(self):
 
         cursor = self.conn.cursor()
-        cursor.execute('UPDATE PlayerProducts SET Ice = ?, Tnt = ?, Heart = ? WHERE PlayerName = ?; ',
+        cursor.execute('UPDATE "dbo.PlayerProducts" SET Ice = ?, Tnt = ?, Heart = ? WHERE PlayerName = ?; ',
                        (self.ice, self.tnt, self.hart, self.playerName))
 
         self.conn.commit()
@@ -150,25 +141,32 @@ class Information():
             self.data_connect = True
             cursor = self.conn.cursor()
             cursor.execute(
-                "SELECT * FROM GameStats WHERE PlayerName = ?;", (self.name))
-            for row in cursor:
+                "SELECT * FROM 'dbo.GameStats' WHERE PlayerName = ?;", (self.name,))
+            row = cursor.fetchone()
+            if row:
+            # for row in cursor:
                 self.name = row[1]
                 self.score = row[2]
-                self.coins = row[3]
-                self.level = row[4]
-                self.heart = row[5]
+                self.coins = int(row[3])
+                self.level = int(row[4])
+                self.heart = int(row[5])
             self.conn.commit()
 
     def push(self):
         cursor = self.conn.cursor()
         cursor.execute(
-            "SELECT 1 FROM GameStats WHERE PlayerName COLLATE Latin1_General_CI_AS = ? ", (self.name))
+            "SELECT 1 FROM 'dbo.GameStats' WHERE LOWER(PlayerName) = LOWER(?)", (self.name,))
         if cursor.fetchone():
-            cursor = self.conn.cursor()
-            cursor.execute("UPDATE GameStats SET Score = ?, Coins = ? ,Heart = ? ,Level = ? WHERE PlayerName = ?;",
-                           (self.score, self.coins, self.heart, self.level, self.name))
-        # else:
-        #     cursor.execute("INSERT INTO GameStats (PlayerName, Score, Coins) VALUES (?, ?, ?);", (self.name, self.score,self.coins))
+            cursor.execute("""
+                UPDATE 'dbo.GameStats' 
+                SET Score = ?, Coins = ?, Heart = ?, Level = ? 
+                WHERE LOWER(PlayerName) = LOWER(?)
+            """, (self.score, self.coins, self.heart, self.level, self.name))
+        else:
+            cursor.execute("""
+                INSERT INTO 'dbo.GameStats' (PlayerName, Score, Coins, Heart, Level) 
+                VALUES (?, ?, ?, ?, ?)
+            """, (self.name, self.score, self.coins, self.heart, self.level))
         self.conn.commit()
 
     def toString_(self):
