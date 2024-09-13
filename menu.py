@@ -60,6 +60,8 @@ class Button(pygame.sprite.Sprite):
                 self.click = True
 
                 onclic_of_buttens(self)
+                if self.type_ != "password" and self.type_ != "name":
+                    self.click=False
 
     def SetText(self, NewText):
         self.text = NewText
@@ -118,10 +120,15 @@ def onclic_of_buttens(self_btn):
         screen_main("start")
 
     if self_btn.type_ == "back":
-        screen_main("guest")
+        screen_main("log in")
+
 
     if self_btn.text == "guest":
         screen_main("guest")
+
+    
+    if self_btn.text == "Enter back":
+        screen_main("log in")
 
     if self_btn.text == "enter":
         self_btn.game_activ = True
@@ -140,7 +147,7 @@ def screen_main(type_):
     if type_ == "shop":
 
         button.add(Button(length-60, 10, 50, 50, (255, 0, 0), "X"))
-        button.add(Button(10, 10, 200, 50, (255, 0, 0), "back"))
+        button.add(Button(10, 70, 200, 50, (255, 0, 0), "back"))
 
         item.add(Item((250, 200), "graphics/weapons/tnt.jpg", "TNT", 10))
         item.add(Item((500, 200), "graphics/heart.png", "heart", 30))
@@ -159,13 +166,16 @@ def screen_main(type_):
 
         button.add(Button(length/2, 300, 100, 100, coler, "sing up"))
 
-        button.add(Button(length/2+150, 300, 100, 100, coler, "guest"))
+        if data.data_connect:
+            button.add(Button(length/2+150, 300, 100, 100, coler, "Enter back"))
+        else:
+            button.add(Button(length/2+150, 300, 100, 100, coler, "guest"))
 
         button.add(Button(length/2-200, 500, 500, 150, (0, 0, 0),
                    "Enter a username and password to log in or sing up", (255, 255, 255)))
 
     if type_ == "guest":
-        global data
+        # global data
         adds_a_user("guest", "0")
         data.name = "guest"
         data.password = "0"
