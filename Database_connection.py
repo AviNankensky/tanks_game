@@ -1,5 +1,4 @@
 import os
-import pyodbc
 import sqlite3
 import traceback
 

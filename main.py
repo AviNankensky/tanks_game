@@ -51,7 +51,7 @@ def flag_hit_from_ball():
 
 
 def reset_game(level_of_game):
-
+    mysteriousBox.empty()
     heart.empty()
     background.empty()
     ice_wall.empty()
@@ -66,7 +66,9 @@ def reset_game(level_of_game):
     enemy_boss1.empty()
     key.empty()
     door.empty()
+    # Tank.pos_rest_flag = True
     Tank.flag = True
+
     Tank.cont_movment = 0
 
     # hart
@@ -163,7 +165,7 @@ def whell_of_elemnt_in_teh_game(level):
 
             for f in star:
                 f.tank_out()
-
+    # if not door_is_open():
     if level == 1:
 
         if current_time % 20 == 0 and current_time != 0 and len(enemy_boss1) == 0:
@@ -212,6 +214,7 @@ def display_inpo_under_line():
 
 
 pygame.init()
+# screen = pygame.display.set_mode((length,width))
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 clock = pygame.time.Clock()
@@ -226,8 +229,8 @@ Background_start = pygame.transform.scale(pygame.image.load(
     'graphics/Background_AI.jpeg'), (length, width)).convert_alpha()
 
 
-Background_end = pygame.transform.scale(pygame.image.load(
-    'graphics/background_end.png'), (length, width)).convert_alpha()
+# Background_end = pygame.transform.scale(pygame.image.load(
+#     'graphics/background_end.png'), (length, width)).convert_alpha()
 
 
 background_line = pygame.transform.scale(pygame.image.load(
@@ -254,32 +257,18 @@ harte_image = pygame.transform.scale(pygame.image.load(
 harte_rect = harte_image.get_rect(center=(455, width-40))
 
 
-button_type = "play"
-play_image = pygame.image.load('graphics/buttons/play_2.png').convert_alpha()
-play_rect = play_image.get_rect(center=(length/2, width/2-200))
-
-
-exit_image = pygame.image.load('graphics/buttons/exit_1.png').convert_alpha()
-exit_rect = exit_image.get_rect(center=(length/2, width/2-50))
-
-
 # timers
 betweenLevelsOfGame = 0
 betweenLevels=False
 enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(enemy_timer, 3000)
 
-# background
 name_text = ""
-# level=1
-# sutfes_level= pygame.Surface((width,length),pygame.SRCALPHA)
-# pygame.draw.rect(sutfes_level,(128,128,128,180),(100,100,300,300))
 screen_main("start")
 
 while True:
 
 
-    whell_of_elemnt_in_teh_game(data.level)
     if bollet_hit_enemy_tank():
         outcome_of_enemy_tanks += 1
 
@@ -292,6 +281,7 @@ while True:
             pygame.quit()
             exit()
         if game_active:
+            whell_of_elemnt_in_teh_game(data.level)
             # # data.push()
             screen_2 = False
             if event.type == pygame.KEYDOWN:
@@ -408,8 +398,9 @@ while True:
 
         if door_is_open() and betweenLevelsOfGame==0:
             background.add(Background((length, 0), background_img))
-            printNumWhitMysteriousBox(data.level, length+300, 200)
-
+            printFrameWithLevel(length+200, 100, data.level)  # יציג מסגרת עם "LEVEL" ומספר 2 בתוכה, החל מהנקודה (100, 100)
+            # printDiamondWithMysteriousBox(length+500, 200)
+            # printNumWhitMysteriousBox(data.level, length+200, 200)
 
         if door_is_open() or betweenLevelsOfGame != 0:
             betweenLevels=True

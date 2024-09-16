@@ -44,7 +44,7 @@ tank_image = pygame.image.load('graphics/tank/tank.png').convert_alpha()
 
 class Tank(pygame.sprite.Sprite):
     cont_movment = 0
-    flag = False
+    pos_rest_flag = False
 
     def __init__(self):
         super().__init__()
@@ -54,7 +54,7 @@ class Tank(pygame.sprite.Sprite):
         self.image = self.tank_image
         self.rect = self.image.get_rect(topleft=(60, 150))
         self.direction = "up"
-        self.activ = False
+        self.active = False
         self.type_ = ""
         self.pos_rest = False
         self.resistance = 5
@@ -76,7 +76,7 @@ class Tank(pygame.sprite.Sprite):
 
         self.keys = pygame.key.get_pressed()
         if stone_blpock(self):
-            self.activ = False
+            self.active = False
 
             if self.direction == "left":
                 self.rect.x += 1
@@ -104,29 +104,29 @@ class Tank(pygame.sprite.Sprite):
             if self.keys[pygame.K_LEFT]:
                 self.tankSound()
                 self.direction = "left"
-                self.activ = True
+                self.active = True
                 self.image = pygame.transform.rotate(self.tank_image, 90)
                 self.rect.x -= self.tank_speed
                 Tank.cont_movment -= 1
                 if Tank.cont_movment < 0:
-                    self.activ = False
+                    self.active = False
                     Tank.cont_movment += 1
 
             elif self.keys[pygame.K_RIGHT]:
                 self.tankSound()
                 self.direction = "right"
-                self.activ = True
+                self.active = True
                 self.image = pygame.transform.rotate(self.tank_image, 270)
                 self.rect.x += self.tank_speed
                 Tank.cont_movment += 1
                 if Tank.cont_movment > length+50:
                     Tank.cont_movment -= 1
-                    self.activ = False
+                    self.active = False
 
             elif self.keys[pygame.K_UP]:
                 self.tankSound()
                 self.direction = "up"
-                self.activ = True
+                self.active = True
                 self.image = pygame.transform.rotate(self.tank_image, 0)
                 self.rect.y -= self.tank_speed
                 if self.rect.y < 0:
@@ -136,14 +136,14 @@ class Tank(pygame.sprite.Sprite):
             elif self.keys[pygame.K_DOWN]:
                 self.tankSound()
                 self.direction = "down"
-                self.activ = True
+                self.active = True
                 self.image = pygame.transform.rotate(self.tank_image, 180)
                 self.rect.y += self.tank_speed
                 if self.rect.y > width-110:
                     # self.activ=False
                     self.rect.y = width-110
             else:
-                self.activ = False
+                self.active = False
 
             if self.rect.x > length-80:
                 self.rect.x -= 1
@@ -861,7 +861,7 @@ class Bounse(pygame.sprite.Sprite):
 
 
 def smart_move(self):
-    direction = choice(["up", "left", "right", "down"])
+    direction=""
     if self.rect.x > tank.sprite.rect.x:
         if self.rect.y > tank.sprite.rect.y:
             direction = choice(["up", "left"])
@@ -898,25 +898,26 @@ def wall_kill(self_):
 
 
 def camera(group):
-    if tank.sprite.activ:
+    if tank.sprite.active:
         if tank.sprite.direction == "right":
             group.rect.x -= 1
         if tank.sprite.direction == "left":
             group.rect.x += 1
+
     if tank.sprite.type_ == "player_blocked":
         if tank.sprite.direction == "left":
             group.rect.x -= 1
-
         if tank.sprite.direction == "right":
             group.rect.x += 1
 
+
     if tank.sprite.pos_rest:
         group.rect.x += Tank.cont_movment
-        Tank.flag = True
-
-    elif Tank.flag:
+        Tank.pos_rest_flag = True
+        
+    elif Tank.pos_rest_flag:
         Tank.cont_movment = 0
-        Tank.flag = False
+        Tank.pos_rest_flag = False
 
 
 def stone_blpock(tank_self):
@@ -1200,8 +1201,7 @@ def imags():
     ice_image = pygame.transform.scale(pygame.image.load(
         'graphics/weapons/ice_wall.png'), (50, 50)).convert_alpha()
 
-    global star_, coin_img
-    star_ = pygame.image.load("graphics/star/star.jpg").convert_alpha()
+    global  coin_img
     coin_img = pygame.image.load("graphics/coin.png").convert_alpha()
 
     # enemy

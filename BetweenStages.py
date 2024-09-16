@@ -28,20 +28,44 @@ class MysteriousBox(pygame.sprite.Sprite):
                     self.kill()
 
     def addRandomli(self):
-
-        random_choice = choice(["coin", "enemy", "coin"])
-        if random_choice == "coin":
-            coin.add(Coin((self.rect.x, self.rect.y)))
-        else:
-            enemy_tank.add(Enemy_tank((self.rect.x, self.rect.y)))
-
+        coin.add(Coin((self.rect.x, self.rect.y)))
     def update(self):
         camera(self)
 
         self.destroy()
 
 
+def printFrameWithLevel(x, y, level):
+    startPointX = x
+    startPointY = y
+    frameWidth = 13  # רוחב המסגרת
+    frameHeight = 9  # גובה המסגרת
 
+    # יצירת המסגרת
+    for row in range(frameHeight):
+        for col in range(frameWidth):
+            # פינות המסגרת
+            if (row == 0 and col == 0) or (row == 0 and col == frameWidth-1) or \
+               (row == frameHeight-1 and col == 0) or (row == frameHeight-1 and col == frameWidth-1):
+                mysteriousBox.add(MysteriousBox(startPointX + col*50, startPointY + row*50))
+            # שורות עליונה ותחתונה
+            elif row == 0 or row == frameHeight-1:
+                if col % 2 == 0:
+                    mysteriousBox.add(MysteriousBox(startPointX + col*50, startPointY + row*50))
+            # עמודות שמאל וימין
+            elif col == 0 or col == frameWidth-1:
+                if row % 2 == 0:
+                    mysteriousBox.add(MysteriousBox(startPointX + col*50, startPointY + row*50))
+
+    # הוספת המילה "LEVEL"
+    # levelStartX = startPointX + 150
+    # levelStartY = startPointY + 100
+    # printLevelWithMysteriousBox(levelStartX, levelStartY)
+
+    # הוספת מספר השלב
+    numberStartX = startPointX + 300
+    numberStartY = startPointY + 100
+    printNumWhitMysteriousBox(level, numberStartX, numberStartY)
 def printNumWhitMysteriousBox(num, x, y):
 
     for r in range(length, length*2, 50):   # 800
@@ -84,7 +108,7 @@ def printNumWhitMysteriousBox(num, x, y):
 def changing_screen_smoothly(tank_sprite):
     key.empty()
 
-    tank_sprite.activ = True
+    tank_sprite.active = True
     tank_sprite.direction = "right"
     tank_sprite.rect.x -= 1
 
