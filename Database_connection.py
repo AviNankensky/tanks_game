@@ -10,20 +10,31 @@ except Exception as e:
 
 def adds_a_user(name, pas):
 
-    if not checks_if_user_exists(name, pas):
+    if not chack_PlaerNameExist(name):
         cursor = conn.cursor()
+        
         cursor.execute(
-            "INSERT INTO PLAYERS (PlayerName, PlayerPassword) VALUES (?, ?);", (name, pas))
+            "INSERT INTO 'dbo.PLAYERS' (PlayerName, PlayerPassword) VALUES (?, ?);", (name, pas))
 
         cursor.execute(
-            "INSERT INTO GameStats (PlayerName, Score, Coins ,Heart ,Level) VALUES (?, ?, ? , ? ,?);", (name, 0, 0, 3, 1))
+            "INSERT INTO 'dbo.GameStats' (PlayerName, Score, Coins ,Heart ,Level) VALUES (?, ?, ?, ?, ?);", (name, 0, 0, 3, 1))
 
         cursor.execute(
-            "INSERT INTO PlayerProducts (PlayerName) VALUES (?);", (name))
+            "INSERT INTO 'dbo.PlayerProducts' (PlayerName , Ice , Tnt ,Heart ) VALUES (?,?,?,?);", (name,20,7,0))
 
         conn.commit()
 
 
+def chack_PlaerNameExist(name):
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 1
+        FROM 'dbo.PLAYERS'
+        WHERE LOWER(PlayerName) = LOWER(?)
+    """, (name,))
+
+    result = cursor.fetchone()
+    return result is not None
 
 def check_user_credentials(name, password):
     cursor = conn.cursor()
@@ -66,22 +77,17 @@ def checks_input(input_name, input_password, type_):
         error_m += "Please enter a password ;\n"
 
     if len(input_password) > 0 and (len(input_name) == 0 or input_name == "name"):
-        error_m += "Please enter a username ; \n"
+        error_m += "Please enter a user name ; \n"
 
     if type_ == "log in":
         if checks_if_user_exists(input_name, input_password):
             error_m += (f"The user --{input_name}-- is already exists ; \n")
             error_m += check_user_credentials(input_name, input_password)
     if type_ == "sign up":
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 1
-            FROM PLAYERS
-            WHERE LOWER(PlayerName) = LOWER(?)
-        """, (input_name,))
-        result = cursor.fetchone()
-        if result is not None:
-            error_m += f"The user '{input_name}' already exists;\n"
+        print("sing up type")
+        # if chack_PlaerNameExist(input_name):
+        #     print("The user already exists;\n")
+        #     error_m += f"The user '{input_name}' already exists;\n"
 
     return error_m
 

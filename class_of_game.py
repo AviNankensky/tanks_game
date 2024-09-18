@@ -1197,7 +1197,7 @@ def imags():
 
     global tnt_image, ice_image
     tnt_image = pygame.transform.scale(pygame.image.load(
-        'graphics/weapons/tnt.jpg'), (50, 50)).convert_alpha()
+        'graphics/weapons/beeper.png'), (50, 50)).convert_alpha()
     ice_image = pygame.transform.scale(pygame.image.load(
         'graphics/weapons/ice_wall.png'), (50, 50)).convert_alpha()
 

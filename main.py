@@ -228,11 +228,6 @@ imags()
 Background_start = pygame.transform.scale(pygame.image.load(
     'graphics/Background_AI.jpeg'), (length, width)).convert_alpha()
 
-
-# Background_end = pygame.transform.scale(pygame.image.load(
-#     'graphics/background_end.png'), (length, width)).convert_alpha()
-
-
 background_line = pygame.transform.scale(pygame.image.load(
     'graphics/background_line.jpg'), (length, 70)).convert_alpha()
 
@@ -249,7 +244,7 @@ ice_image = pygame.transform.scale(pygame.image.load(
 ice_rect = ice_image.get_rect(center=(150, width-40))
 
 tnt_image = pygame.transform.scale(pygame.image.load(
-    'graphics/weapons/tnt.jpg'), (40, 40)).convert_alpha()
+    'graphics/weapons/beeper.png'), (40, 40)).convert_alpha()
 tnt_rect = tnt_image.get_rect(center=(285, width-40))
 
 harte_image = pygame.transform.scale(pygame.image.load(

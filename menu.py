@@ -90,7 +90,7 @@ def onclic_of_buttens(self_btn):
     if self_btn.type_ == "log in":
         error_text += checks_input(name_text, password_text, "log in")
         # if len(error_text)==0:
-        if checks_if_user_exists(name_text, password_text):
+        if checks_if_user_exists(name_text, password_text) and name_text != "name" and password_text!= "password":
             global data
             data.name = name_text
             data.password = password_text
@@ -101,12 +101,18 @@ def onclic_of_buttens(self_btn):
 
     if self_btn.type_ == "sing up":
         error_text += checks_input(name_text, password_text, "sing up")
-        if error_text == "One or more of the details is incorrect ;" or len(error_text) == 0 or error_text == "The user ---- is already exists ;" or error_text == "the password ---- is not exists ;" or error_text == "One or more of the details is incorrect ;" or error_text == "the name ---- is not exists ;":
 
+
+        if not chack_PlaerNameExist(name_text):
+        # if error_text == "One or more of the details is incorrect ;" or len(error_text) == 0 or error_text == "The user ---- is already exists ;" or error_text == "the password ---- is not exists ;" or error_text == "One or more of the details is incorrect ;" or error_text == "the name ---- is not exists ;":
             error_text = "The user has successfully registered"
             adds_a_user(name_text, password_text)
-            if len(error_text) == 0:
-                screen_main("sing up")
+            pygame.time.delay(1000)
+        else:
+            print("The user already exists;\n")
+            error_text += f"The user '{name_text}' already exists;\n"
+
+    
 
     # מזריק את הטקסט שגיאה למסך שגיאה
     for i in button:
@@ -149,7 +155,7 @@ def screen_main(type_):
         button.add(Button(length-60, 10, 50, 50, (255, 0, 0), "X"))
         button.add(Button(10, 70, 200, 50, (255, 0, 0), "back"))
 
-        item.add(Item((250, 200), "graphics/weapons/tnt.jpg", "TNT", 10))
+        item.add(Item((250, 200), "graphics/weapons/beeper.png", "beeper", 10))
         item.add(Item((500, 200), "graphics/heart.png", "heart", 30))
         item.add(Item((750, 200), "graphics/weapons/ice_wall.png", "ice", 3))
 

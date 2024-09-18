@@ -56,7 +56,7 @@ class Item(pygame.sprite.Sprite):
             else:
                 self.notEnough = True
 
-        elif self.name == "TNT":
+        elif self.name == "beeper":
             if data.coins > 9:
                 data.shopDate.tnt += 1
                 data.coins -= 10
